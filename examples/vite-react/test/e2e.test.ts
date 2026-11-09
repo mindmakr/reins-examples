@@ -1,5 +1,6 @@
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { reins } from 'reins';
 import { findMarker, listFiles } from 'reins/verify';
 import { build } from 'vite';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -44,6 +45,25 @@ describe('Payday Invoice Studio (examples/vite-react)', () => {
       paidThisMonthUsd: 13150,
       overdueCount: 0,
     });
+  });
+
+  it('tracks component mount/render timings and unified timeline in reins.perf()', () => {
+    reins.markComponent('header', 'mount');
+    reins.markComponent('perf-hud', 'mount');
+    reins.markComponent('summary-cards', 'mount');
+    reins.markComponent('summary-cards', 'render');
+    reins.markComponent('invoice-list', 'mount');
+
+    const report = reins.perf();
+    expect(typeof report.lifecycle.nowMs).toBe('number');
+    const summaryComp = report.components.find((c) => c.id === 'summary-cards');
+    expect(summaryComp).toBeDefined();
+    expect(summaryComp?.renders).toBeGreaterThanOrEqual(2);
+    expect(typeof summaryComp?.mountedAtMs).toBe('number');
+    expect(typeof summaryComp?.lastRenderMs).toBe('number');
+    expect(report.timeline.some((e) => e.kind === 'component-mount' && e.name === 'summary-cards')).toBe(true);
+    expect(typeof report.api.totalCalls).toBe('number');
+    expect(typeof report.api.avgMs).toBe('number');
   });
 
   it('strips all reins dev code (__REINS_DEV_ONLY__) from the production Vite build', async () => {

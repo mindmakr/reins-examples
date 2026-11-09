@@ -10,6 +10,13 @@ export interface Translations {
   loginAsAdmin: string;
   themeLight: string;
   themeDark: string;
+  hudTitle: string;
+  hudSubtitle: string;
+  hudLifecycle: string;
+  hudComponents: string;
+  hudApiLatency: string;
+  hudLayoutHealth: string;
+  hudZeroClip: string;
   summaryTitle: string;
   totalOutstanding: string;
   totalOutstandingSub: string;
@@ -52,6 +59,13 @@ export const TRANSLATIONS: Record<Locale, Translations> = {
     loginAsAdmin: 'Sign in as Finance Admin',
     themeLight: 'Light',
     themeDark: 'Dark',
+    hudTitle: 'Live Runtime Instruments (reins_perf · reins_dom)',
+    hudSubtitle: 'Lucid Coding Principle #2 & #8 — lifecycle timings, panel mounts/renders, API latency & CSS layout check',
+    hudLifecycle: 'Page Lifecycle',
+    hudComponents: 'Panel Mounts & Renders',
+    hudApiLatency: 'API Call Stats',
+    hudLayoutHealth: 'DOM & CSS Layout',
+    hudZeroClip: '0 clipping issues',
     summaryTitle: 'Receivables Overview',
     totalOutstanding: 'Total Outstanding',
     totalOutstandingSub: 'Pending + overdue receivables',
@@ -92,6 +106,13 @@ export const TRANSLATIONS: Record<Locale, Translations> = {
     loginAsAdmin: 'تسجيل الدخول كمدير مالي',
     themeLight: 'فاتح',
     themeDark: 'داكن',
+    hudTitle: 'مؤشرات الأداء والتشخيص الحية (reins_perf · reins_dom)',
+    hudSubtitle: 'مبادئ البرمجة الواعية #2 و #8 — أوقات التحميل، عدد مرات رسم اللوحات، زمن استجابة API وفحص تخطيط RTL',
+    hudLifecycle: 'دورة حياة الصفحة',
+    hudComponents: 'تركيب ورسم اللوحات',
+    hudApiLatency: 'إحصائيات طلبات API',
+    hudLayoutHealth: 'فحص DOM وتخطيط CSS',
+    hudZeroClip: 'لا توجد مشاكل قص',
     summaryTitle: 'ملخص المستحقات المالية',
     totalOutstanding: 'إجمالي المستحقات',
     totalOutstandingSub: 'الفواتير المعلقة والمتأخرة',
@@ -132,6 +153,13 @@ export const TRANSLATIONS: Record<Locale, Translations> = {
     loginAsAdmin: 'Connexion Admin Finance',
     themeLight: 'Clair',
     themeDark: 'Sombre',
+    hudTitle: 'Instruments Runtime en Direct (reins_perf · reins_dom)',
+    hudSubtitle: 'Principes Lucid Coding #2 & #8 — cycle de vie, montages/rendus, latence API et diagnostic CSS',
+    hudLifecycle: 'Cycle de Page',
+    hudComponents: 'Montages & Rendus',
+    hudApiLatency: 'Latence API',
+    hudLayoutHealth: 'Diagnostic DOM & CSS',
+    hudZeroClip: '0 débordement détecté',
     summaryTitle: 'Aperçu des Créances',
     totalOutstanding: 'Total en Attente',
     totalOutstandingSub: 'Factures en attente et en retard',

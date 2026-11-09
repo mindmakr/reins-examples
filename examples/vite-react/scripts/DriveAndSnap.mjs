@@ -10,7 +10,7 @@ const projectRoot = resolve(__dirname, '..');
 const screenshotsDir = join(projectRoot, 'screenshots');
 mkdirSync(screenshotsDir, { recursive: true });
 
-const CDP_PORT = 9222;
+const CDP_PORT = 19222;
 const CDP_URL = `http://127.0.0.1:${CDP_PORT}`;
 
 async function waitForPairing(hub, timeoutMs = 10000) {
@@ -90,10 +90,21 @@ async function main() {
     });
     await page.waitForTimeout(200);
 
-    console.log('6. Calling MCP tool: reins_snap -> summary-cards (English LTR Light)...');
+    console.log('6. Calling MCP tool: reins_snap & reins_dom -> summary-cards (English LTR Light)...');
     const snapSummaryEn = await callTool(ctx, 'reins_snap', { id: 'summary-cards' });
     if (snapSummaryEn?.file) {
       copyFileSync(snapSummaryEn.file, join(screenshotsDir, 'summary-en-light.png'));
+    }
+    const domSummaryEn = await callTool(ctx, 'reins_dom', {
+      panel: 'summary-cards',
+      depth: 2,
+      maxNodes: 20,
+    });
+    if (domSummaryEn?.styles?.direction !== 'ltr') {
+      throw new Error(`Expected summary-cards direction to be ltr, got: ${domSummaryEn?.styles?.direction}`);
+    }
+    if (Array.isArray(domSummaryEn?.issues) && domSummaryEn.issues.length > 0) {
+      throw new Error(`Unexpected layout issues in summary-cards (EN): ${JSON.stringify(domSummaryEn.issues)}`);
     }
     await page.screenshot({ path: join(screenshotsDir, 'full-en-light.png') });
 
@@ -113,7 +124,7 @@ async function main() {
     } catch (err) {
       refusedError = err.message;
     }
-    if (!refusedError || !refusedError.includes('consequential')) {
+    if (!refusedError || !refusedError.includes('confirm')) {
       throw new Error(`Expected consequential refusal, got: ${refusedError}`);
     }
 
@@ -134,25 +145,43 @@ async function main() {
     });
     await page.waitForTimeout(250);
 
-    console.log('10. Calling MCP tool: reins_snap -> invoice-list (Arabic RTL Dark)...');
+    console.log('10. Calling MCP tool: reins_snap & reins_dom -> invoice-list (Arabic RTL Dark)...');
     const snapInvoicesAr = await callTool(ctx, 'reins_snap', { id: 'invoice-list' });
     if (snapInvoicesAr?.file) {
       copyFileSync(snapInvoicesAr.file, join(screenshotsDir, 'invoices-ar-rtl-dark.png'));
+    }
+    const domInvoicesAr = await callTool(ctx, 'reins_dom', {
+      panel: 'invoice-list',
+      depth: 2,
+      maxNodes: 25,
+    });
+    if (domInvoicesAr?.styles?.direction !== 'rtl') {
+      throw new Error(`Expected invoice-list direction to be rtl in Arabic, got: ${domInvoicesAr?.styles?.direction}`);
+    }
+    if (Array.isArray(domInvoicesAr?.issues) && domInvoicesAr.issues.length > 0) {
+      throw new Error(`Unexpected layout issues in invoice-list (AR RTL): ${JSON.stringify(domInvoicesAr.issues)}`);
     }
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.waitForTimeout(100);
     await page.screenshot({ path: join(screenshotsDir, 'full-ar-rtl-dark.png') });
 
-    console.log('11. Inspecting reins_state, reins_network, and reins_errors...');
+    console.log('11. Inspecting reins_state, reins_network, reins_errors, and reins_perf...');
     const appState = await callTool(ctx, 'reins_state', { name: 'app' });
     const networkCalls = await callTool(ctx, 'reins_network', { limit: 10 });
     const runtimeErrors = await callTool(ctx, 'reins_errors', {});
+    const perfReport = await callTool(ctx, 'reins_perf', {});
 
     if (appState?.app?.sessionToken !== '[redacted]') {
       throw new Error(`Expected sessionToken to be [redacted], got: ${appState?.app?.sessionToken}`);
     }
     if (!Array.isArray(runtimeErrors) || runtimeErrors.length !== 0) {
       throw new Error(`Expected 0 runtime errors, got: ${JSON.stringify(runtimeErrors)}`);
+    }
+    if (!perfReport?.components || perfReport.components.length < 5) {
+      throw new Error(`Expected >= 5 tracked components in reins_perf, got: ${perfReport?.components?.length}`);
+    }
+    if (!perfReport?.api || perfReport.api.totalCalls < 3) {
+      throw new Error(`Expected >= 3 API calls in reins_perf, got: ${perfReport?.api?.totalCalls}`);
     }
 
     const showcaseReport = {
@@ -166,6 +195,9 @@ async function main() {
       reins_state_app: appState,
       reins_network: networkCalls,
       reins_errors: runtimeErrors,
+      reins_perf: perfReport,
+      reins_dom_summary_en_ltr: domSummaryEn,
+      reins_dom_invoices_ar_rtl: domInvoicesAr,
       screenshots: [
         'examples/vite-react/screenshots/full-en-light.png',
         'examples/vite-react/screenshots/summary-en-light.png',

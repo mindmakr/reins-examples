@@ -2,7 +2,9 @@
 
 Official, runnable examples for [**reins**](https://github.com/mindmakr/reins) ([live site & docs](https://mindmakr.github.io/reins/)) — the tiny (< 5 KB min+gzip) dev-only library and agent skill that gives AI coding agents hands and eyes inside your running web and Expo apps. Built for [**Lucid Coding**](https://mindmakr.github.io/coordinator/lucid-coding.html) alongside [**Coordinator**](https://github.com/mindmakr/coordinator) ([site](https://mindmakr.github.io/coordinator/)).
 
-Instead of clicking by pixels and guessing what happened, an agent paired with **reins** calls your app's own named actions, reads redacted state snapshots, inspects recent network calls and runtime errors, and captures pixel-exact `<ReinsPanel>` screenshots across locales (LTR & RTL) and themes. In production builds, `reins` is swapped for an empty stub and `reins verify` guarantees zero dev code ever ships.
+Instead of clicking by pixels and guessing what happened, an agent paired with **reins** calls your app's own named actions, reads redacted state snapshots, inspects recent network calls and runtime errors, measures page lifecycle, component mount/render timings, and API latency (`reins_perf`), inspects live DOM subtrees, computed CSS, and layout clipping (`reins_dom`), and captures pixel-exact `<ReinsPanel>` screenshots across locales (LTR & RTL) and themes. In production builds, `reins` is swapped for an empty stub and `reins verify` guarantees zero dev code ever ships.
+
+> **Deep Dive for Models & Developers:** Read [**`HOW_IT_WAS_BUILT.md`**](./HOW_IT_WAS_BUILT.md) for the **8 Lucid Coding Principles**, how `reins` stays under **5 KB min+gzip** (`5,106 B`) with zero runtime dependencies, and a step-by-step walkthrough of how coding agents use `reins_perf` and `reins_dom` to diagnose and optimize apps.
 
 ---
 
@@ -10,7 +12,7 @@ Instead of clicking by pixels and guessing what happened, an agent paired with *
 
 | Example | Stack | Highlights | Status |
 | --- | --- | --- | --- |
-| [`examples/vite-react`](./examples/vite-react) | **Vite + React + TypeScript** | 6 named actions (`useReinsAction`), consequential action confirmation guard, automatic secret redaction in `reins_state` & `reins_network`, 3 locales (`en` LTR, `ar` RTL, `fr` LTR), light/dark themes, 4 `<ReinsPanel>` targets, automated CDP agent showcase (`npm run demo:agent`), and `reins verify dist` bundle gate | **Ready & verified** |
+| [`examples/vite-react`](./examples/vite-react) | **Vite + React + TypeScript** | 6 named actions (`useReinsAction`), consequential action confirmation guard, automatic secret redaction in `reins_state` & `reins_network`, live performance & diagnostics HUD (`reins_perf` + `reins_dom`), 3 locales (`en` LTR, `ar` RTL, `fr` LTR), light/dark themes, 5 `<ReinsPanel>` targets, automated CDP agent showcase (`npm run demo:agent`), and `reins verify dist` bundle gate | **Ready & verified** |
 | `examples/nextjs-app-router` | **Next.js App Router** | `withReins(nextConfig)`, `/api/reins-token` route handler, client `<Reins />` bootstrap, server/client boundary verification (`reins verify .next/static`) | *Next up* |
 | `examples/expo-mobile` | **Expo / React Native** | `withReins(metroConfig)`, `connectExpo()`, `<ReinsPanel id>` with `testID`, `adb` & simulator panel snaps | *Planned* |
 
@@ -93,8 +95,8 @@ When you run `/reins:setup` on a Vite + React project like [`examples/vite-react
 
 ### Step 3: Run `/reins:drive` (or `npm run demo:agent`)
 
-Once paired, the agent drives the running app over MCP using the 7 `reins_*` tools:
-`reins_list_actions` → `reins_run_action` → `reins_state` → `reins_network` → `reins_errors` → `reins_panel_box` → `reins_snap`.
+Once paired, the agent drives the running app over MCP using the 9 `reins_*` tools:
+`reins_list_actions` → `reins_run_action` → `reins_state` → `reins_network` → `reins_errors` → `reins_perf` → `reins_dom` → `reins_panel_box` → `reins_snap`.
 
 ---
 
@@ -145,7 +147,7 @@ The agent calls `reins_list_actions` first to discover every action schema, stat
     { "name": "void-overdue-invoices", "consequential": true, "readOnly": false }
   ],
   "states": ["app", "route", "location", "localStorage", "sessionStorage", "cookies"],
-  "panels": ["header", "summary-cards", "invoice-list", "activity-log"]
+  "panels": ["header", "perf-hud", "summary-cards", "invoice-list", "activity-log"]
 }
 ```
 
@@ -165,7 +167,7 @@ When the agent calls `mark-invoice-paid` (`{ "id": "INV-1042" }`), `INV-1042` ($
 
 ```json
 {
-  "withoutConfirmError": "reins: \"void-overdue-invoices\" is consequential; call again with confirm: true",
+  "withoutConfirmError": "reins: confirm: true required",
   "withConfirmResult": {
     "voidedIds": ["INV-1044"],
     "reason": "Approved Q4 overdue write-off",
@@ -243,7 +245,71 @@ Even though the app's internal store holds `sessionToken: "sk-live-session-finan
 ]
 ```
 
-#### 6. Zero-Leak Production Bundle Verification (`npm run build`)
+#### 6. Performance Telemetry (`reins_perf`) & On-Demand DOM/CSS Layout Inspection (`reins_dom`)
+
+Following **Lucid Coding Principle #2** (*"Give agents instruments, not just screenshots"*) and **Principle #8** (*"Get the work done; performance comes with experience and measurement"*), the agent calls `reins_perf` and `reins_dom` to inspect the unified millisecond timeline and verify LTR/RTL computed CSS without guessing from pixels:
+
+**`reins_perf` (page lifecycle, `<ReinsPanel>` mount/render counts, API latency, and unified timeline):**
+
+```json
+{
+  "lifecycle": {
+    "ttfbMs": 22,
+    "domInteractiveMs": 31,
+    "domContentLoadedMs": 436,
+    "loadMs": 437,
+    "firstPaintMs": 460,
+    "firstContentfulPaintMs": 596,
+    "domNodes": 178,
+    "nowMs": 2388
+  },
+  "components": [
+    { "id": "header", "mountedAtMs": 456, "lastRenderMs": 1738, "renders": 14 },
+    { "id": "perf-hud", "mountedAtMs": 459, "lastRenderMs": 1738, "renders": 14 },
+    { "id": "summary-cards", "mountedAtMs": 460, "lastRenderMs": 1738, "renders": 14 },
+    { "id": "invoice-list", "mountedAtMs": 460, "lastRenderMs": 1738, "renders": 14 },
+    { "id": "activity-log", "mountedAtMs": 462, "lastRenderMs": 1738, "renders": 14 }
+  ],
+  "api": {
+    "totalCalls": 4,
+    "failedCalls": 0,
+    "avgMs": 2,
+    "maxMs": 2,
+    "slowest": { "method": "POST", "url": "/api/session/login", "status": 200, "startMs": 1232, "ms": 2 }
+  },
+  "actions": [
+    { "name": "[reins] login-as-tester", "startMs": 1232, "durationMs": 6 },
+    { "name": "[reins] mark-invoice-paid", "startMs": 1723, "durationMs": 4 },
+    { "name": "[reins] void-overdue-invoices", "startMs": 1731, "durationMs": 4 },
+    { "name": "[reins] set-locale", "startMs": 1735, "durationMs": 2 },
+    { "name": "[reins] set-theme", "startMs": 1738, "durationMs": 1 }
+  ]
+}
+```
+
+**`reins_dom` (`{ "panel": "invoice-list", "depth": 2 }` in Arabic RTL Dark Mode):**
+
+```json
+{
+  "tag": "div",
+  "classes": ["panel-card"],
+  "panel": "invoice-list",
+  "box": { "x": 54, "y": 555, "width": 1072, "height": 342 },
+  "styles": {
+    "display": "block",
+    "direction": "rtl",
+    "color": "rgb(248, 250, 252)",
+    "backgroundColor": "rgb(17, 24, 39)",
+    "overflowX": "visible",
+    "overflowY": "visible"
+  },
+  "issues": []
+}
+```
+
+See [**`HOW_IT_WAS_BUILT.md`**](./HOW_IT_WAS_BUILT.md) for the complete architecture and code walkthrough.
+
+#### 7. Zero-Leak Production Bundle Verification (`npm run build`)
 
 Running `npm run build` runs `vite build && reins verify dist`, swapping `reins` for `reins/stub` and scanning every emitted file in `dist/` for `__REINS_DEV_ONLY__`:
 

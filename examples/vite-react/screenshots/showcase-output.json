@@ -139,6 +139,7 @@
     ],
     "panels": [
       "header",
+      "perf-hud",
       "summary-cards",
       "invoice-list",
       "activity-log"
@@ -159,7 +160,7 @@
     }
   },
   "consequential_guard": {
-    "withoutConfirmError": "reins: \"void-overdue-invoices\" is consequential; call again with confirm: true",
+    "withoutConfirmError": "reins: confirm: true required",
     "withConfirmResult": {
       "voidedIds": [
         "INV-1044"
@@ -246,7 +247,7 @@
           "endpoint": "set-theme (dark)",
           "status": 200,
           "note": "Switched theme to dark",
-          "at": "21:26:57"
+          "at": "23:18:34"
         },
         {
           "id": "ACT-6",
@@ -254,7 +255,7 @@
           "endpoint": "set-locale (ar)",
           "status": 200,
           "note": "Switched UI locale to AR (RTL)",
-          "at": "21:26:57"
+          "at": "23:18:34"
         },
         {
           "id": "ACT-5",
@@ -262,7 +263,7 @@
           "endpoint": "/api/invoices/void-overdue",
           "status": 200,
           "note": "Voided 1 overdue invoice(s): INV-1044",
-          "at": "21:26:57"
+          "at": "23:18:34"
         },
         {
           "id": "ACT-4",
@@ -270,7 +271,7 @@
           "endpoint": "/api/invoices/INV-1042/pay",
           "status": 200,
           "note": "Marked INV-1042 ($3,200) as paid",
-          "at": "21:26:57"
+          "at": "23:18:34"
         },
         {
           "id": "ACT-3",
@@ -278,7 +279,7 @@
           "endpoint": "/api/invoices?role=finance-admin",
           "status": 200,
           "note": "Synced 5 invoices",
-          "at": "21:26:57"
+          "at": "23:18:33"
         },
         {
           "id": "ACT-2",
@@ -286,7 +287,7 @@
           "endpoint": "/api/session/login",
           "status": 200,
           "note": "Signed in as Maya Lin (finance-admin)",
-          "at": "21:26:57"
+          "at": "23:18:33"
         },
         {
           "id": "ACT-1",
@@ -303,14 +304,15 @@
     {
       "method": "POST",
       "url": "/api/session/login",
-      "status": 200,
-      "ms": 2,
-      "at": 1794259617423,
+      "startMs": 1232,
+      "at": 1794266313703,
       "requestHeaders": {
         "content-type": "application/json",
         "authorization": "[redacted]"
       },
       "requestBody": "[redacted]",
+      "status": 200,
+      "ms": 2,
       "responseHeaders": {
         "cache-control": "no-store",
         "connection": "[redacted]",
@@ -323,13 +325,14 @@
     {
       "method": "GET",
       "url": "/api/invoices?role=finance-admin",
-      "status": 200,
-      "ms": 2,
-      "at": 1794259617425,
+      "startMs": 1234,
+      "at": 1794266313705,
       "requestHeaders": {
         "content-type": "application/json",
         "authorization": "[redacted]"
       },
+      "status": 200,
+      "ms": 1,
       "responseHeaders": {
         "cache-control": "no-store",
         "connection": "[redacted]",
@@ -342,14 +345,15 @@
     {
       "method": "POST",
       "url": "/api/invoices/INV-1042/pay",
-      "status": 200,
-      "ms": 2,
-      "at": 1794259617903,
+      "startMs": 1723,
+      "at": 1794266314194,
       "requestHeaders": {
         "content-type": "application/json",
         "authorization": "[redacted]"
       },
       "requestBody": "[redacted]",
+      "status": 200,
+      "ms": 2,
       "responseHeaders": {
         "cache-control": "no-store",
         "connection": "[redacted]",
@@ -362,14 +366,15 @@
     {
       "method": "POST",
       "url": "/api/invoices/void-overdue",
-      "status": 200,
-      "ms": 2,
-      "at": 1794259617909,
+      "startMs": 1731,
+      "at": 1794266314201,
       "requestHeaders": {
         "content-type": "application/json",
         "authorization": "[redacted]"
       },
       "requestBody": "[redacted]",
+      "status": 200,
+      "ms": 2,
       "responseHeaders": {
         "cache-control": "no-store",
         "connection": "[redacted]",
@@ -381,6 +386,682 @@
     }
   ],
   "reins_errors": [],
+  "reins_perf": {
+    "lifecycle": {
+      "ttfbMs": 22,
+      "domInteractiveMs": 31,
+      "domContentLoadedMs": 436,
+      "loadMs": 437,
+      "firstPaintMs": 460,
+      "firstContentfulPaintMs": 596,
+      "domNodes": 178,
+      "nowMs": 2388
+    },
+    "components": [
+      {
+        "id": "header",
+        "mountedAtMs": 456,
+        "lastRenderMs": 1738,
+        "renders": 14
+      },
+      {
+        "id": "perf-hud",
+        "mountedAtMs": 459,
+        "lastRenderMs": 1738,
+        "renders": 14
+      },
+      {
+        "id": "summary-cards",
+        "mountedAtMs": 460,
+        "lastRenderMs": 1738,
+        "renders": 14
+      },
+      {
+        "id": "invoice-list",
+        "mountedAtMs": 460,
+        "lastRenderMs": 1738,
+        "renders": 14
+      },
+      {
+        "id": "activity-log",
+        "mountedAtMs": 462,
+        "lastRenderMs": 1738,
+        "renders": 14
+      }
+    ],
+    "api": {
+      "totalCalls": 4,
+      "failedCalls": 0,
+      "avgMs": 2,
+      "maxMs": 2,
+      "slowest": {
+        "method": "POST",
+        "url": "/api/session/login",
+        "status": 200,
+        "startMs": 1232,
+        "ms": 2
+      },
+      "calls": [
+        {
+          "method": "POST",
+          "url": "/api/session/login",
+          "status": 200,
+          "startMs": 1232,
+          "ms": 2
+        },
+        {
+          "method": "GET",
+          "url": "/api/invoices?role=finance-admin",
+          "status": 200,
+          "startMs": 1234,
+          "ms": 1
+        },
+        {
+          "method": "POST",
+          "url": "/api/invoices/INV-1042/pay",
+          "status": 200,
+          "startMs": 1723,
+          "ms": 2
+        },
+        {
+          "method": "POST",
+          "url": "/api/invoices/void-overdue",
+          "status": 200,
+          "startMs": 1731,
+          "ms": 2
+        }
+      ]
+    },
+    "actions": [
+      {
+        "name": "[reins] login-as-tester",
+        "startMs": 1232,
+        "durationMs": 6
+      },
+      {
+        "name": "[reins] mark-invoice-paid",
+        "startMs": 1723,
+        "durationMs": 4
+      },
+      {
+        "name": "[reins] void-overdue-invoices",
+        "startMs": 1731,
+        "durationMs": 4
+      },
+      {
+        "name": "[reins] set-locale",
+        "startMs": 1735,
+        "durationMs": 2
+      },
+      {
+        "name": "[reins] set-theme",
+        "startMs": 1738,
+        "durationMs": 1
+      }
+    ],
+    "timeline": [
+      {
+        "kind": "lifecycle",
+        "name": "ttfb",
+        "atMs": 22
+      },
+      {
+        "kind": "lifecycle",
+        "name": "domInteractive",
+        "atMs": 31
+      },
+      {
+        "kind": "lifecycle",
+        "name": "domContentLoaded",
+        "atMs": 436
+      },
+      {
+        "kind": "lifecycle",
+        "name": "load",
+        "atMs": 437
+      },
+      {
+        "kind": "component-mount",
+        "name": "header",
+        "atMs": 456
+      },
+      {
+        "kind": "component-mount",
+        "name": "perf-hud",
+        "atMs": 459
+      },
+      {
+        "kind": "component-mount",
+        "name": "summary-cards",
+        "atMs": 460
+      },
+      {
+        "kind": "component-mount",
+        "name": "invoice-list",
+        "atMs": 460
+      },
+      {
+        "kind": "component-mount",
+        "name": "activity-log",
+        "atMs": 462
+      },
+      {
+        "kind": "lifecycle",
+        "name": "firstContentfulPaint",
+        "atMs": 596
+      },
+      {
+        "kind": "api",
+        "name": "POST /api/session/login",
+        "atMs": 1232,
+        "durationMs": 2,
+        "status": 200
+      },
+      {
+        "kind": "action",
+        "name": "[reins] login-as-tester",
+        "atMs": 1232,
+        "durationMs": 6
+      },
+      {
+        "kind": "api",
+        "name": "GET /api/invoices?role=finance-admin",
+        "atMs": 1234,
+        "durationMs": 1,
+        "status": 200
+      },
+      {
+        "kind": "api",
+        "name": "POST /api/invoices/INV-1042/pay",
+        "atMs": 1723,
+        "durationMs": 2,
+        "status": 200
+      },
+      {
+        "kind": "action",
+        "name": "[reins] mark-invoice-paid",
+        "atMs": 1723,
+        "durationMs": 4
+      },
+      {
+        "kind": "api",
+        "name": "POST /api/invoices/void-overdue",
+        "atMs": 1731,
+        "durationMs": 2,
+        "status": 200
+      },
+      {
+        "kind": "action",
+        "name": "[reins] void-overdue-invoices",
+        "atMs": 1731,
+        "durationMs": 4
+      },
+      {
+        "kind": "action",
+        "name": "[reins] set-locale",
+        "atMs": 1735,
+        "durationMs": 2
+      },
+      {
+        "kind": "action",
+        "name": "[reins] set-theme",
+        "atMs": 1738,
+        "durationMs": 1
+      }
+    ]
+  },
+  "reins_dom_summary_en_ltr": {
+    "tag": "div",
+    "classes": [
+      "panel-card"
+    ],
+    "panel": "summary-cards",
+    "box": {
+      "x": 54,
+      "y": 347,
+      "width": 1072,
+      "height": 190
+    },
+    "styles": {
+      "display": "block",
+      "position": "static",
+      "flexDirection": "row",
+      "justifyContent": "normal",
+      "alignItems": "normal",
+      "gap": "normal",
+      "overflowX": "visible",
+      "overflowY": "visible",
+      "direction": "ltr",
+      "color": "rgb(15, 23, 42)",
+      "backgroundColor": "rgb(255, 255, 255)",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "opacity": "1",
+      "visibility": "visible",
+      "zIndex": "auto"
+    },
+    "issues": [],
+    "children": [
+      {
+        "tag": "div",
+        "classes": [
+          "toolbar-row"
+        ],
+        "box": {
+          "x": 77,
+          "y": 366,
+          "width": 1026,
+          "height": 23
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "flexDirection": "row",
+          "justifyContent": "space-between",
+          "alignItems": "center",
+          "gap": "12px",
+          "overflowX": "visible",
+          "overflowY": "visible",
+          "direction": "ltr",
+          "color": "rgb(15, 23, 42)",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "opacity": "1",
+          "visibility": "visible",
+          "zIndex": "auto"
+        },
+        "issues": [],
+        "children": [
+          {
+            "tag": "h2",
+            "classes": [
+              "section-heading"
+            ],
+            "text": "Receivables Overview",
+            "box": {
+              "x": 77,
+              "y": 366,
+              "width": 157,
+              "height": 23
+            },
+            "styles": {
+              "display": "block",
+              "position": "static",
+              "flexDirection": "row",
+              "justifyContent": "normal",
+              "alignItems": "normal",
+              "gap": "normal",
+              "overflowX": "visible",
+              "overflowY": "visible",
+              "direction": "ltr",
+              "color": "rgb(15, 23, 42)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "fontSize": "15.5px",
+              "fontWeight": "700",
+              "opacity": "1",
+              "visibility": "visible",
+              "zIndex": "auto"
+            },
+            "issues": [],
+            "children": []
+          }
+        ]
+      },
+      {
+        "tag": "div",
+        "classes": [
+          "summary-grid"
+        ],
+        "box": {
+          "x": 77,
+          "y": 401,
+          "width": 1026,
+          "height": 117
+        },
+        "styles": {
+          "display": "grid",
+          "position": "static",
+          "flexDirection": "row",
+          "justifyContent": "normal",
+          "alignItems": "normal",
+          "gap": "14px",
+          "overflowX": "visible",
+          "overflowY": "visible",
+          "direction": "ltr",
+          "color": "rgb(15, 23, 42)",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "opacity": "1",
+          "visibility": "visible",
+          "zIndex": "auto"
+        },
+        "issues": [],
+        "children": [
+          {
+            "tag": "div",
+            "classes": [
+              "metric-card"
+            ],
+            "box": {
+              "x": 77,
+              "y": 401,
+              "width": 333,
+              "height": 117
+            },
+            "styles": {
+              "display": "block",
+              "position": "static",
+              "flexDirection": "row",
+              "justifyContent": "normal",
+              "alignItems": "normal",
+              "gap": "normal",
+              "overflowX": "visible",
+              "overflowY": "visible",
+              "direction": "ltr",
+              "color": "rgb(15, 23, 42)",
+              "backgroundColor": "rgb(238, 242, 249)",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "opacity": "1",
+              "visibility": "visible",
+              "zIndex": "auto"
+            },
+            "issues": [],
+            "children": []
+          },
+          {
+            "tag": "div",
+            "classes": [
+              "metric-card"
+            ],
+            "box": {
+              "x": 424,
+              "y": 401,
+              "width": 333,
+              "height": 117
+            },
+            "styles": {
+              "display": "block",
+              "position": "static",
+              "flexDirection": "row",
+              "justifyContent": "normal",
+              "alignItems": "normal",
+              "gap": "normal",
+              "overflowX": "visible",
+              "overflowY": "visible",
+              "direction": "ltr",
+              "color": "rgb(15, 23, 42)",
+              "backgroundColor": "rgb(238, 242, 249)",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "opacity": "1",
+              "visibility": "visible",
+              "zIndex": "auto"
+            },
+            "issues": [],
+            "children": []
+          },
+          {
+            "tag": "div",
+            "classes": [
+              "metric-card"
+            ],
+            "box": {
+              "x": 770,
+              "y": 401,
+              "width": 333,
+              "height": 117
+            },
+            "styles": {
+              "display": "block",
+              "position": "static",
+              "flexDirection": "row",
+              "justifyContent": "normal",
+              "alignItems": "normal",
+              "gap": "normal",
+              "overflowX": "visible",
+              "overflowY": "visible",
+              "direction": "ltr",
+              "color": "rgb(15, 23, 42)",
+              "backgroundColor": "rgb(238, 242, 249)",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "opacity": "1",
+              "visibility": "visible",
+              "zIndex": "auto"
+            },
+            "issues": [],
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  "reins_dom_invoices_ar_rtl": {
+    "tag": "div",
+    "classes": [
+      "panel-card"
+    ],
+    "panel": "invoice-list",
+    "box": {
+      "x": 54,
+      "y": 312,
+      "width": 1072,
+      "height": 356
+    },
+    "styles": {
+      "display": "block",
+      "position": "static",
+      "flexDirection": "row",
+      "justifyContent": "normal",
+      "alignItems": "normal",
+      "gap": "normal",
+      "overflowX": "visible",
+      "overflowY": "visible",
+      "direction": "rtl",
+      "color": "rgb(248, 250, 252)",
+      "backgroundColor": "rgb(17, 24, 39)",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "opacity": "1",
+      "visibility": "visible",
+      "zIndex": "auto"
+    },
+    "issues": [],
+    "children": [
+      {
+        "tag": "div",
+        "classes": [
+          "toolbar-row"
+        ],
+        "box": {
+          "x": 77,
+          "y": 331,
+          "width": 1026,
+          "height": 30
+        },
+        "styles": {
+          "display": "flex",
+          "position": "static",
+          "flexDirection": "row",
+          "justifyContent": "space-between",
+          "alignItems": "center",
+          "gap": "12px",
+          "overflowX": "visible",
+          "overflowY": "visible",
+          "direction": "rtl",
+          "color": "rgb(248, 250, 252)",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "opacity": "1",
+          "visibility": "visible",
+          "zIndex": "auto"
+        },
+        "issues": [],
+        "children": [
+          {
+            "tag": "h2",
+            "classes": [
+              "section-heading"
+            ],
+            "text": "فواتير العملاء",
+            "box": {
+              "x": 1020,
+              "y": 334,
+              "width": 83,
+              "height": 23
+            },
+            "styles": {
+              "display": "block",
+              "position": "static",
+              "flexDirection": "row",
+              "justifyContent": "normal",
+              "alignItems": "normal",
+              "gap": "normal",
+              "overflowX": "visible",
+              "overflowY": "visible",
+              "direction": "rtl",
+              "color": "rgb(248, 250, 252)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "fontSize": "15.5px",
+              "fontWeight": "700",
+              "opacity": "1",
+              "visibility": "visible",
+              "zIndex": "auto"
+            },
+            "issues": [],
+            "children": []
+          },
+          {
+            "tag": "div",
+            "classes": [
+              "filter-controls"
+            ],
+            "box": {
+              "x": 77,
+              "y": 331,
+              "width": 529,
+              "height": 30
+            },
+            "styles": {
+              "display": "flex",
+              "position": "static",
+              "flexDirection": "row",
+              "justifyContent": "normal",
+              "alignItems": "center",
+              "gap": "10px",
+              "overflowX": "visible",
+              "overflowY": "visible",
+              "direction": "rtl",
+              "color": "rgb(248, 250, 252)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "opacity": "1",
+              "visibility": "visible",
+              "zIndex": "auto"
+            },
+            "issues": [],
+            "children": []
+          }
+        ]
+      },
+      {
+        "tag": "table",
+        "classes": [
+          "invoice-table"
+        ],
+        "box": {
+          "x": 77,
+          "y": 375,
+          "width": 1026,
+          "height": 274
+        },
+        "styles": {
+          "display": "table",
+          "position": "static",
+          "flexDirection": "row",
+          "justifyContent": "normal",
+          "alignItems": "normal",
+          "gap": "normal",
+          "overflowX": "visible",
+          "overflowY": "visible",
+          "direction": "rtl",
+          "color": "rgb(248, 250, 252)",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "fontSize": "13.5px",
+          "fontWeight": "400",
+          "opacity": "1",
+          "visibility": "visible",
+          "zIndex": "auto"
+        },
+        "issues": [],
+        "children": [
+          {
+            "tag": "thead",
+            "box": {
+              "x": 77,
+              "y": 375,
+              "width": 1026,
+              "height": 38
+            },
+            "styles": {
+              "display": "table-header-group",
+              "position": "static",
+              "flexDirection": "row",
+              "justifyContent": "normal",
+              "alignItems": "normal",
+              "gap": "normal",
+              "overflowX": "visible",
+              "overflowY": "visible",
+              "direction": "rtl",
+              "color": "rgb(248, 250, 252)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "fontSize": "13.5px",
+              "fontWeight": "400",
+              "opacity": "1",
+              "visibility": "visible",
+              "zIndex": "auto"
+            },
+            "issues": [],
+            "children": []
+          },
+          {
+            "tag": "tbody",
+            "box": {
+              "x": 77,
+              "y": 413,
+              "width": 1026,
+              "height": 236
+            },
+            "styles": {
+              "display": "table-row-group",
+              "position": "static",
+              "flexDirection": "row",
+              "justifyContent": "normal",
+              "alignItems": "normal",
+              "gap": "normal",
+              "overflowX": "visible",
+              "overflowY": "visible",
+              "direction": "rtl",
+              "color": "rgb(248, 250, 252)",
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+              "fontSize": "13.5px",
+              "fontWeight": "400",
+              "opacity": "1",
+              "visibility": "visible",
+              "zIndex": "auto"
+            },
+            "issues": [],
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
   "screenshots": [
     "examples/vite-react/screenshots/full-en-light.png",
     "examples/vite-react/screenshots/summary-en-light.png",

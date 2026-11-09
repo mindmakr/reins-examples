@@ -112,7 +112,10 @@ let activityLog: ActivityEntry[] = [
 const listeners = new Set<() => void>();
 let actSeq = 1;
 
+let cachedSnap: AppSnapshot | null = null;
+
 function notify() {
+  cachedSnap = null;
   if (typeof document !== 'undefined') {
     document.documentElement.lang = locale;
     document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr';
@@ -188,8 +191,9 @@ export function getVisibleInvoices(): Invoice[] {
 }
 
 export function getSnapshot(): AppSnapshot {
+  if (cachedSnap) return cachedSnap;
   const visible = getVisibleInvoices();
-  return {
+  cachedSnap = {
     user,
     sessionToken,
     locale,
@@ -202,6 +206,7 @@ export function getSnapshot(): AppSnapshot {
     visibleInvoiceIds: visible.map((i) => i.id),
     activityLog: [...activityLog],
   };
+  return cachedSnap;
 }
 
 export const store = {

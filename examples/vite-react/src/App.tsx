@@ -1,4 +1,5 @@
-import { useSyncExternalStore } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
+import { reins } from 'reins';
 import { ReinsPanel, useReinsAction } from 'reins/react';
 import { TRANSLATIONS, type Locale } from './i18n';
 import {
@@ -13,17 +14,16 @@ import {
 const subscribe = (cb: () => void) => store.subscribe(cb);
 const getSnapshot = () => store.getSnapshot();
 
-// Cache the snapshot reference so useSyncExternalStore only re-renders on store notifications
-let cachedSnapshot = getSnapshot();
-store.subscribe(() => {
-  cachedSnapshot = getSnapshot();
-});
-const getCachedSnapshot = () => cachedSnapshot;
-
 export function App() {
-  const snap = useSyncExternalStore(subscribe, getCachedSnapshot);
+  const snap = useSyncExternalStore(subscribe, getSnapshot);
+  const [, setTick] = useState(0);
   const t = TRANSLATIONS[snap.locale];
   const visibleInvoices = getVisibleInvoices();
+
+  useEffect(() => {
+    const timer = setTimeout(() => setTick((n) => n + 1), 60);
+    return () => clearTimeout(timer);
+  }, []);
 
   useReinsAction<{ role?: TesterRole }>({
     name: 'login-as-tester',
@@ -125,6 +125,8 @@ export function App() {
       ? t.roleFinanceAdmin
       : t.roleViewer;
 
+  const perf = reins.perf();
+
   return (
     <div className="app-shell">
       <ReinsPanel id="header" className="panel-card header-bar">
@@ -175,6 +177,54 @@ export function App() {
                 {mode === 'light' ? t.themeLight : t.themeDark}
               </button>
             ))}
+          </div>
+        </div>
+      </ReinsPanel>
+
+      <ReinsPanel id="perf-hud" className="panel-card hud-bar">
+        <div className="hud-header">
+          <h2 className="hud-title">{t.hudTitle}</h2>
+          <span className="hud-subtitle">{t.hudSubtitle}</span>
+        </div>
+        <div className="hud-grid">
+          <div className="hud-box">
+            <div className="hud-box-label">{t.hudLifecycle}</div>
+            <div className="hud-pills">
+              <span className="hud-pill">TTFB {perf.lifecycle.ttfbMs ?? 0}ms</span>
+              <span className="hud-pill">FCP {perf.lifecycle.firstContentfulPaintMs ?? 0}ms</span>
+              <span className="hud-pill">Load {perf.lifecycle.loadMs ?? 0}ms</span>
+              <span className="hud-pill">{perf.lifecycle.domNodes} DOM nodes</span>
+            </div>
+          </div>
+
+          <div className="hud-box">
+            <div className="hud-box-label">{t.hudComponents}</div>
+            <div className="hud-pills">
+              {perf.components.slice(0, 4).map((c) => (
+                <span key={c.id} className="hud-pill">
+                  {c.id} @{c.mountedAtMs}ms · ×{c.renders}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="hud-box">
+            <div className="hud-box-label">{t.hudApiLatency}</div>
+            <div className="hud-pills">
+              <span className="hud-pill">{perf.api.totalCalls} calls</span>
+              <span className="hud-pill">avg {perf.api.avgMs}ms</span>
+              <span className="hud-pill">max {perf.api.maxMs}ms</span>
+              <span className="hud-pill ok">{perf.api.failedCalls} failed</span>
+            </div>
+          </div>
+
+          <div className="hud-box">
+            <div className="hud-box-label">{t.hudLayoutHealth}</div>
+            <div className="hud-pills">
+              <span className="hud-pill">dir: {snap.dir.toUpperCase()}</span>
+              <span className="hud-pill">theme: {snap.theme}</span>
+              <span className="hud-pill ok">{t.hudZeroClip}</span>
+            </div>
           </div>
         </div>
       </ReinsPanel>

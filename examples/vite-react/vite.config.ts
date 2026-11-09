@@ -62,4 +62,10 @@ function invoiceApiMiddleware(): Plugin {
 
 export default defineConfig({
   plugins: [reins(), invoiceApiMiddleware(), react()],
+  resolve: {
+    dedupe: ['reins', 'react', 'react-dom'],
+  },
+  optimizeDeps: {
+    exclude: ['reins', 'reins/react', 'reins/adapters'],
+  },
 });
