@@ -1,0 +1,390 @@
+{
+  "reins_list_actions": {
+    "app": {
+      "url": "http://localhost:5173/",
+      "title": "Payday Invoice Studio — Lucid Billing Desk (reins + Vite + React)",
+      "meta": {
+        "app": "payday-invoice-studio",
+        "framework": "vite-react"
+      }
+    },
+    "actions": [
+      {
+        "name": "login-as-tester",
+        "description": "Sign in as a seeded dev tester (finance-admin or viewer) and sync /api/invoices",
+        "input": {
+          "type": "object",
+          "properties": {
+            "role": {
+              "type": "string",
+              "enum": [
+                "finance-admin",
+                "viewer"
+              ]
+            }
+          }
+        },
+        "consequential": false,
+        "readOnly": false
+      },
+      {
+        "name": "set-locale",
+        "description": "Switch the UI locale (en LTR, ar RTL, or fr LTR)",
+        "input": {
+          "type": "object",
+          "properties": {
+            "locale": {
+              "type": "string",
+              "enum": [
+                "en",
+                "ar",
+                "fr"
+              ]
+            }
+          },
+          "required": [
+            "locale"
+          ]
+        },
+        "consequential": false,
+        "readOnly": false
+      },
+      {
+        "name": "set-theme",
+        "description": "Switch between light and dark themes",
+        "input": {
+          "type": "object",
+          "properties": {
+            "theme": {
+              "type": "string",
+              "enum": [
+                "light",
+                "dark"
+              ]
+            }
+          },
+          "required": [
+            "theme"
+          ]
+        },
+        "consequential": false,
+        "readOnly": false
+      },
+      {
+        "name": "filter-invoices",
+        "description": "Filter invoices by status (all, pending, paid, overdue) and optional search query",
+        "input": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "all",
+                "pending",
+                "paid",
+                "overdue"
+              ]
+            },
+            "query": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "status"
+          ]
+        },
+        "consequential": false,
+        "readOnly": true
+      },
+      {
+        "name": "mark-invoice-paid",
+        "description": "Mark a single invoice as paid via POST /api/invoices/:id/pay",
+        "input": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Invoice ID such as INV-1042"
+            }
+          },
+          "required": [
+            "id"
+          ]
+        },
+        "consequential": false,
+        "readOnly": false
+      },
+      {
+        "name": "void-overdue-invoices",
+        "description": "Write off and void all overdue invoices (consequential; requires confirm: true)",
+        "input": {
+          "type": "object",
+          "properties": {
+            "reason": {
+              "type": "string"
+            }
+          }
+        },
+        "consequential": true,
+        "readOnly": false
+      }
+    ],
+    "states": [
+      "app",
+      "route",
+      "location",
+      "localStorage",
+      "sessionStorage",
+      "cookies"
+    ],
+    "panels": [
+      "header",
+      "summary-cards",
+      "invoice-list",
+      "activity-log"
+    ]
+  },
+  "login_result": {
+    "signedInAs": "Maya Lin",
+    "role": "finance-admin",
+    "syncedInvoices": 5
+  },
+  "mark_paid_result": {
+    "id": "INV-1042",
+    "status": "paid",
+    "totals": {
+      "outstandingUsd": 8350,
+      "paidThisMonthUsd": 13150,
+      "overdueCount": 1
+    }
+  },
+  "consequential_guard": {
+    "withoutConfirmError": "reins: \"void-overdue-invoices\" is consequential; call again with confirm: true",
+    "withConfirmResult": {
+      "voidedIds": [
+        "INV-1044"
+      ],
+      "reason": "Approved Q4 overdue write-off",
+      "totals": {
+        "outstandingUsd": 6400,
+        "paidThisMonthUsd": 13150,
+        "overdueCount": 0
+      }
+    }
+  },
+  "reins_state_app": {
+    "app": {
+      "user": {
+        "name": "Maya Lin",
+        "email": "maya.lin@payday.example",
+        "role": "finance-admin"
+      },
+      "sessionToken": "[redacted]",
+      "locale": "ar",
+      "dir": "rtl",
+      "theme": "dark",
+      "filter": "all",
+      "query": "",
+      "totals": {
+        "outstandingUsd": 6400,
+        "paidThisMonthUsd": 13150,
+        "overdueCount": 0
+      },
+      "invoices": [
+        {
+          "id": "INV-1041",
+          "client": "Northwind Logistics Ltd.",
+          "clientAr": "شركة نورث ويند للخدمات اللوجستية",
+          "dueDate": "2026-10-28",
+          "amount": 4850,
+          "status": "paid"
+        },
+        {
+          "id": "INV-1042",
+          "client": "Al-Bahr Maritime Systems",
+          "clientAr": "أنظمة البحر الملاحية",
+          "dueDate": "2026-10-14",
+          "amount": 3200,
+          "status": "paid"
+        },
+        {
+          "id": "INV-1043",
+          "client": "Atelier Lumière SAS",
+          "clientAr": "أتيليه لوميير للتصميم",
+          "dueDate": "2026-11-18",
+          "amount": 6400,
+          "status": "pending"
+        },
+        {
+          "id": "INV-1044",
+          "client": "Kestrel Cloud Analytics",
+          "clientAr": "كيسترل لتحليلات السحابة",
+          "dueDate": "2026-10-05",
+          "amount": 1950,
+          "status": "voided"
+        },
+        {
+          "id": "INV-1045",
+          "client": "Vanguard Solar Co-op",
+          "clientAr": "تعاونية فانغارد للطاقة الشمسية",
+          "dueDate": "2026-11-24",
+          "amount": 5100,
+          "status": "paid"
+        }
+      ],
+      "visibleInvoiceIds": [
+        "INV-1041",
+        "INV-1042",
+        "INV-1043",
+        "INV-1044",
+        "INV-1045"
+      ],
+      "activityLog": [
+        {
+          "id": "ACT-7",
+          "method": "ACTION",
+          "endpoint": "set-theme (dark)",
+          "status": 200,
+          "note": "Switched theme to dark",
+          "at": "21:26:57"
+        },
+        {
+          "id": "ACT-6",
+          "method": "ACTION",
+          "endpoint": "set-locale (ar)",
+          "status": 200,
+          "note": "Switched UI locale to AR (RTL)",
+          "at": "21:26:57"
+        },
+        {
+          "id": "ACT-5",
+          "method": "POST",
+          "endpoint": "/api/invoices/void-overdue",
+          "status": 200,
+          "note": "Voided 1 overdue invoice(s): INV-1044",
+          "at": "21:26:57"
+        },
+        {
+          "id": "ACT-4",
+          "method": "POST",
+          "endpoint": "/api/invoices/INV-1042/pay",
+          "status": 200,
+          "note": "Marked INV-1042 ($3,200) as paid",
+          "at": "21:26:57"
+        },
+        {
+          "id": "ACT-3",
+          "method": "GET",
+          "endpoint": "/api/invoices?role=finance-admin",
+          "status": 200,
+          "note": "Synced 5 invoices",
+          "at": "21:26:57"
+        },
+        {
+          "id": "ACT-2",
+          "method": "POST",
+          "endpoint": "/api/session/login",
+          "status": 200,
+          "note": "Signed in as Maya Lin (finance-admin)",
+          "at": "21:26:57"
+        },
+        {
+          "id": "ACT-1",
+          "method": "READY",
+          "endpoint": "/__reins/token",
+          "status": 200,
+          "note": "Dev workspace initialized; waiting for agent or tester actions",
+          "at": "09:00:00"
+        }
+      ]
+    }
+  },
+  "reins_network": [
+    {
+      "method": "POST",
+      "url": "/api/session/login",
+      "status": 200,
+      "ms": 2,
+      "at": 1794259617423,
+      "requestHeaders": {
+        "content-type": "application/json",
+        "authorization": "[redacted]"
+      },
+      "requestBody": "[redacted]",
+      "responseHeaders": {
+        "cache-control": "no-store",
+        "connection": "[redacted]",
+        "content-length": "70",
+        "content-type": "application/json",
+        "date": "[redacted]",
+        "keep-alive": "[redacted]"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "/api/invoices?role=finance-admin",
+      "status": 200,
+      "ms": 2,
+      "at": 1794259617425,
+      "requestHeaders": {
+        "content-type": "application/json",
+        "authorization": "[redacted]"
+      },
+      "responseHeaders": {
+        "cache-control": "no-store",
+        "connection": "[redacted]",
+        "content-length": "75",
+        "content-type": "application/json",
+        "date": "[redacted]",
+        "keep-alive": "[redacted]"
+      }
+    },
+    {
+      "method": "POST",
+      "url": "/api/invoices/INV-1042/pay",
+      "status": 200,
+      "ms": 2,
+      "at": 1794259617903,
+      "requestHeaders": {
+        "content-type": "application/json",
+        "authorization": "[redacted]"
+      },
+      "requestBody": "[redacted]",
+      "responseHeaders": {
+        "cache-control": "no-store",
+        "connection": "[redacted]",
+        "content-length": "79",
+        "content-type": "application/json",
+        "date": "[redacted]",
+        "keep-alive": "[redacted]"
+      }
+    },
+    {
+      "method": "POST",
+      "url": "/api/invoices/void-overdue",
+      "status": 200,
+      "ms": 2,
+      "at": 1794259617909,
+      "requestHeaders": {
+        "content-type": "application/json",
+        "authorization": "[redacted]"
+      },
+      "requestBody": "[redacted]",
+      "responseHeaders": {
+        "cache-control": "no-store",
+        "connection": "[redacted]",
+        "content-length": "49",
+        "content-type": "application/json",
+        "date": "[redacted]",
+        "keep-alive": "[redacted]"
+      }
+    }
+  ],
+  "reins_errors": [],
+  "screenshots": [
+    "examples/vite-react/screenshots/full-en-light.png",
+    "examples/vite-react/screenshots/summary-en-light.png",
+    "examples/vite-react/screenshots/full-ar-rtl-dark.png",
+    "examples/vite-react/screenshots/invoices-ar-rtl-dark.png"
+  ]
+}

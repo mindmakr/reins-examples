@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "reins": {
+      "command": "npx",
+      "args": ["reins", "bridge"]
+    }
+  }
+}

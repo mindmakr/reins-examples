@@ -1,0 +1,21 @@
+{
+  "name": "reins-examples",
+  "private": true,
+  "description": "Official examples for reins: see how coding agents set up, drive, inspect and snap web and Expo apps",
+  "license": "MIT",
+  "author": "mindmakr",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mindmakr/reins-examples.git"
+  },
+  "type": "module",
+  "workspaces": [
+    "examples/vite-react"
+  ],
+  "scripts": {
+    "dev": "npm --workspace @reins-examples/vite-react run dev",
+    "build": "npm --workspace @reins-examples/vite-react run build",
+    "demo:agent": "npm --workspace @reins-examples/vite-react run demo:agent",
+    "test": "npm --workspace @reins-examples/vite-react run test"
+  }
+}
