@@ -1,61 +1,34 @@
+import { join } from 'node:path';
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import reins from 'reins/vite';
+import { nodeEnabled } from 'reins/node';
+// @ts-expect-error ESM server module
+import { createInvoiceApi } from './server/index.mjs';
 
 /**
- * Tiny in-memory dev API middleware so browser `fetch('/api/...')` calls hit a real
- * HTTP endpoint during local development and automated agent runs.
- * `reins_network` captures these requests and automatically redacts sensitive headers.
+ * Mounts the Payday Invoice API (`server/index.mjs`, instrumented with `reins/node`)
+ * directly into Vite's dev server so `npm run dev` runs both frontend and backend in one command.
+ *
+ * - Pairs with the local `reins` bridge as a `node` server (`reins_server`).
+ * - Joins browser `fetch('/api/...')` calls with server `db.*` spans via `x-reins-trace`.
+ * - Sends `Server-Timing` headers so `<ReinsPanel id="perf-hud">` displays live backend DB latency.
  */
 function invoiceApiMiddleware(): Plugin {
   return {
     name: 'payday-invoice-api',
     configureServer(server) {
-      server.middlewares.use((req, res, next) => {
-        if (!req.url?.startsWith('/api/')) return next();
-
-        const sendJson = (status: number, payload: unknown) => {
-          res.statusCode = status;
-          res.setHeader('Content-Type', 'application/json');
-          res.setHeader('Cache-Control', 'no-store');
-          res.end(JSON.stringify(payload));
-        };
-
-        if (req.method === 'GET' && req.url.startsWith('/api/invoices')) {
-          return sendJson(200, {
-            ok: true,
-            syncedAt: new Date().toISOString(),
-            source: 'payday-dev-api',
-          });
-        }
-
-        if (req.method === 'POST' && req.url === '/api/session/login') {
-          return sendJson(200, {
-            ok: true,
-            authenticated: true,
-            issuedAt: new Date().toISOString(),
-          });
-        }
-
-        const payMatch = req.url.match(/^\/api\/invoices\/([A-Za-z0-9-]+)\/pay$/);
-        if (req.method === 'POST' && payMatch) {
-          return sendJson(200, {
-            ok: true,
-            id: payMatch[1],
-            status: 'paid',
-            paidAt: new Date().toISOString(),
-          });
-        }
-
-        if (req.method === 'POST' && req.url === '/api/invoices/void-overdue') {
-          return sendJson(200, {
-            ok: true,
-            voidedAt: new Date().toISOString(),
-          });
-        }
-
-        return sendJson(404, { ok: false, error: 'Not found' });
-      });
+      const api = createInvoiceApi();
+      if (nodeEnabled()) {
+        void api.reinsNode.connect({
+          tokenFile: join(server.config.root, '.reins', 'token'),
+          meta: { name: 'payday-api', service: 'invoices' },
+        });
+        server.httpServer?.once('close', () => {
+          api.reinsNode.disconnect();
+        });
+      }
+      server.middlewares.use(api.middleware);
     },
   };
 }
@@ -66,6 +39,14 @@ export default defineConfig({
     dedupe: ['reins', 'react', 'react-dom'],
   },
   optimizeDeps: {
-    exclude: ['reins', 'reins/react', 'reins/adapters'],
+    exclude: ['reins', 'reins/react', 'reins/adapters', 'reins/record', 'reins/report'],
+    // `reins/react` is excluded above and imports React, so Vite would only find React while the page is
+    // already running and then reload it. Naming React here pre-bundles it at start, even on a cold cache.
+    include: ['react', 'react-dom', 'react-dom/client', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
+  },
+  server: {
+    watch: {
+      ignored: ['**/.reins/**', '**/screenshots/**'],
+    },
   },
 });

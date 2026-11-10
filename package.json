@@ -16,6 +16,7 @@
     "dev": "npm --workspace @reins-examples/vite-react run dev",
     "build": "npm --workspace @reins-examples/vite-react run build",
     "demo:agent": "npm --workspace @reins-examples/vite-react run demo:agent",
-    "test": "npm --workspace @reins-examples/vite-react run test"
+    "test": "npm --workspace @reins-examples/vite-react run test",
+    "reins:refresh": "npm install -D ./vendor/reins-0.1.0.tgz --workspace @reins-examples/vite-react"
   }
 }
