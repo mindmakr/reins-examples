@@ -87,7 +87,8 @@ describe('Payday Invoice Studio (examples/vite-react)', () => {
 
   it('instruments /api/invoices with reins/node spans, flags N+1 slow queries, and diffs before/after sessions', async () => {
     const rn = createReinsNode({ NODE_ENV: 'development' });
-    await rn.connect({ tokenFile: join(projectRoot, '.reins', 'no-token-for-unit-test'), reconnect: false });
+    // No bridge in this test: `standalone` records without one, so the test can read `rn.report()` itself.
+    await rn.connect({ tokenFile: join(projectRoot, '.reins', 'no-token-for-unit-test'), reconnect: false, standalone: true });
     const api = createInvoiceApi({ reinsNode: rn, initialQueryMode: 'n+1-slow' });
     const srv = createServer(api.handler);
     await new Promise<void>((r) => srv.listen(0, '127.0.0.1', r));

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "title": "after-batched-fix",
-  "createdAt": "2026-11-10T22:16:50.681Z",
+  "createdAt": "2026-11-10T22:50:50.480Z",
   "reinsVersion": "0.1.0",
   "source": "bridge",
   "app": {
@@ -190,9 +190,9 @@
       "query": "",
       "lastServerTiming": {
         "route": "GET /api/invoices",
-        "appMs": 27,
-        "dbMs": 26.9,
-        "elP99Ms": 51.3
+        "appMs": 29,
+        "dbMs": 28.9,
+        "elP99Ms": 63.9
       },
       "totals": {
         "outstandingUsd": 11550,
@@ -255,7 +255,7 @@
           "endpoint": "/api/invoices?role=finance-admin",
           "status": 200,
           "note": "Synced 5 invoices",
-          "at": "22:16:50"
+          "at": "22:50:50"
         },
         {
           "id": "ACT-2",
@@ -263,7 +263,7 @@
           "endpoint": "/api/session/login",
           "status": 200,
           "note": "Signed in as Maya Lin (finance-admin)",
-          "at": "22:16:50"
+          "at": "22:50:50"
         },
         {
           "id": "ACT-1",
@@ -289,16 +289,16 @@
     {
       "method": "POST",
       "url": "/api/session/login",
-      "startMs": 859,
-      "at": 1794349010387,
+      "startMs": 849,
+      "at": 1794351050166,
       "requestHeaders": {
         "content-type": "application/json",
         "authorization": "[redacted]"
       },
       "requestBody": "[redacted]",
-      "traceId": "71e6sd-1",
+      "traceId": "d2y6ei-1",
       "status": 200,
-      "ms": 28,
+      "ms": 41,
       "responseHeaders": {
         "cache-control": "no-store",
         "connection": "[redacted]",
@@ -312,15 +312,15 @@
     {
       "method": "GET",
       "url": "/api/invoices?role=finance-admin",
-      "startMs": 888,
-      "at": 1794349010416,
+      "startMs": 891,
+      "at": 1794351050207,
       "requestHeaders": {
         "content-type": "application/json",
         "authorization": "[redacted]"
       },
-      "traceId": "71e6sd-2",
+      "traceId": "d2y6ei-2",
       "status": 200,
-      "ms": 31,
+      "ms": 32,
       "responseHeaders": {
         "cache-control": "no-store",
         "connection": "[redacted]",
@@ -336,83 +336,83 @@
   "perf": {
     "lifecycle": {
       "ttfbMs": 8,
-      "domInteractiveMs": 22,
-      "domContentLoadedMs": 48,
-      "loadMs": 49,
+      "domInteractiveMs": 21,
+      "domContentLoadedMs": 47,
+      "loadMs": 48,
       "firstPaintMs": 68,
       "firstContentfulPaintMs": 116,
       "domNodes": 175,
-      "nowMs": 1137
+      "nowMs": 1147
     },
     "components": [
       {
         "id": "header",
-        "mountedAtMs": 77,
-        "lastRenderMs": 923,
+        "mountedAtMs": 76,
+        "lastRenderMs": 928,
         "renders": 4
       },
       {
         "id": "perf-hud",
-        "mountedAtMs": 78,
-        "lastRenderMs": 923,
+        "mountedAtMs": 76,
+        "lastRenderMs": 928,
         "renders": 4
       },
       {
         "id": "summary-cards",
-        "mountedAtMs": 78,
-        "lastRenderMs": 923,
+        "mountedAtMs": 76,
+        "lastRenderMs": 928,
         "renders": 4
       },
       {
         "id": "invoice-list",
-        "mountedAtMs": 78,
-        "lastRenderMs": 923,
+        "mountedAtMs": 76,
+        "lastRenderMs": 928,
         "renders": 4
       },
       {
         "id": "activity-log",
-        "mountedAtMs": 78,
-        "lastRenderMs": 923,
+        "mountedAtMs": 76,
+        "lastRenderMs": 928,
         "renders": 4
       }
     ],
     "api": {
       "totalCalls": 2,
       "failedCalls": 0,
-      "avgMs": 30,
-      "maxMs": 31,
+      "avgMs": 37,
+      "maxMs": 41,
       "slowest": {
-        "method": "GET",
-        "url": "/api/invoices?role=finance-admin",
+        "method": "POST",
+        "url": "/api/session/login",
         "status": 200,
-        "startMs": 888,
-        "ms": 31,
-        "traceId": "71e6sd-2"
+        "startMs": 849,
+        "ms": 41,
+        "traceId": "d2y6ei-1"
       },
       "calls": [
         {
           "method": "POST",
           "url": "/api/session/login",
           "status": 200,
-          "startMs": 859,
-          "ms": 28,
-          "traceId": "71e6sd-1"
+          "startMs": 849,
+          "ms": 41,
+          "traceId": "d2y6ei-1"
         },
         {
           "method": "GET",
           "url": "/api/invoices?role=finance-admin",
           "status": 200,
-          "startMs": 888,
-          "ms": 31,
-          "traceId": "71e6sd-2"
+          "startMs": 891,
+          "ms": 32,
+          "traceId": "d2y6ei-2"
         }
       ]
     },
     "actions": [
       {
         "name": "[reins] login-as-tester",
-        "startMs": 858,
-        "durationMs": 64
+        "startMs": 849,
+        "durationMs": 80
       }
     ],
     "timeline": [
@@ -424,42 +424,42 @@
       {
         "kind": "lifecycle",
         "name": "domInteractive",
-        "atMs": 22
+        "atMs": 21
       },
       {
         "kind": "lifecycle",
         "name": "domContentLoaded",
-        "atMs": 48
+        "atMs": 47
       },
       {
         "kind": "lifecycle",
         "name": "load",
-        "atMs": 49
+        "atMs": 48
       },
       {
         "kind": "component-mount",
         "name": "header",
-        "atMs": 77
+        "atMs": 76
       },
       {
         "kind": "component-mount",
         "name": "perf-hud",
-        "atMs": 78
+        "atMs": 76
       },
       {
         "kind": "component-mount",
         "name": "summary-cards",
-        "atMs": 78
+        "atMs": 76
       },
       {
         "kind": "component-mount",
         "name": "invoice-list",
-        "atMs": 78
+        "atMs": 76
       },
       {
         "kind": "component-mount",
         "name": "activity-log",
-        "atMs": 78
+        "atMs": 76
       },
       {
         "kind": "lifecycle",
@@ -467,66 +467,66 @@
         "atMs": 116
       },
       {
-        "kind": "action",
-        "name": "[reins] login-as-tester",
-        "atMs": 858,
-        "durationMs": 64
-      },
-      {
         "kind": "api",
         "name": "POST /api/session/login",
-        "atMs": 859,
-        "durationMs": 28,
+        "atMs": 849,
+        "durationMs": 41,
         "status": 200,
-        "traceId": "71e6sd-1"
+        "traceId": "d2y6ei-1"
+      },
+      {
+        "kind": "action",
+        "name": "[reins] login-as-tester",
+        "atMs": 849,
+        "durationMs": 80
       },
       {
         "kind": "server",
         "name": "POST /api/session/login",
-        "atMs": 861,
-        "durationMs": 25,
+        "atMs": 851,
+        "durationMs": 37,
         "status": 200,
-        "traceId": "71e6sd-1",
-        "dbMs": 24.7,
+        "traceId": "d2y6ei-1",
+        "dbMs": 36.7,
         "spans": [
           {
             "name": "db.users.find_by_email",
-            "atMs": 861,
-            "durationMs": 9.6
+            "atMs": 851,
+            "durationMs": 21.2
           },
           {
             "name": "db.sessions.insert",
-            "atMs": 871,
-            "durationMs": 15.1
+            "atMs": 872,
+            "durationMs": 15.5
           }
         ]
       },
       {
         "kind": "api",
         "name": "GET /api/invoices?role=finance-admin",
-        "atMs": 888,
-        "durationMs": 31,
+        "atMs": 891,
+        "durationMs": 32,
         "status": 200,
-        "traceId": "71e6sd-2"
+        "traceId": "d2y6ei-2"
       },
       {
         "kind": "server",
         "name": "GET /api/invoices",
-        "atMs": 890,
-        "durationMs": 28,
+        "atMs": 893,
+        "durationMs": 29,
         "status": 200,
-        "traceId": "71e6sd-2",
-        "dbMs": 26.9,
+        "traceId": "d2y6ei-2",
+        "dbMs": 28.9,
         "spans": [
           {
             "name": "db.invoices.select",
-            "atMs": 890,
-            "durationMs": 11.8
+            "atMs": 893,
+            "durationMs": 11.4
           },
           {
             "name": "db.line_items.select_batch",
-            "atMs": 902,
-            "durationMs": 15.1
+            "atMs": 904,
+            "durationMs": 17.5
           }
         ]
       }
@@ -536,40 +536,40 @@
     {
       "id": "header",
       "renders": 4,
-      "mountedAtMs": 77,
-      "lastRenderMs": 923,
+      "mountedAtMs": 76,
+      "lastRenderMs": 928,
       "nodes": 17,
       "issues": 0
     },
     {
       "id": "perf-hud",
       "renders": 4,
-      "mountedAtMs": 78,
-      "lastRenderMs": 923,
+      "mountedAtMs": 76,
+      "lastRenderMs": 928,
       "nodes": 41,
       "issues": 0
     },
     {
       "id": "summary-cards",
       "renders": 4,
-      "mountedAtMs": 78,
-      "lastRenderMs": 923,
+      "mountedAtMs": 76,
+      "lastRenderMs": 928,
       "nodes": 16,
       "issues": 0
     },
     {
       "id": "invoice-list",
       "renders": 4,
-      "mountedAtMs": 78,
-      "lastRenderMs": 923,
+      "mountedAtMs": 76,
+      "lastRenderMs": 928,
       "nodes": 66,
       "issues": 0
     },
     {
       "id": "activity-log",
       "renders": 4,
-      "mountedAtMs": 78,
-      "lastRenderMs": 923,
+      "mountedAtMs": 76,
+      "lastRenderMs": 928,
       "nodes": 23,
       "issues": 0
     }
@@ -578,14 +578,14 @@
   "server": {
     "runtime": {
       "node": "v22.22.0",
-      "pid": 66368,
-      "uptimeS": 7,
-      "rssMb": 179.9,
-      "heapUsedMb": 93.2,
+      "pid": 48700,
+      "uptimeS": 8,
+      "rssMb": 183,
+      "heapUsedMb": 94.8,
       "eventLoop": {
-        "p50Ms": 15.4,
-        "p99Ms": 51.3,
-        "maxMs": 864.6
+        "p50Ms": 15.5,
+        "p99Ms": 63.9,
+        "maxMs": 735.6
       }
     },
     "requests": [
@@ -594,21 +594,21 @@
         "route": "/api/session/login",
         "url": "/api/session/login",
         "status": 200,
-        "ms": 25,
-        "startMs": 6574,
-        "at": 1794349010389,
-        "traceId": "71e6sd-1",
-        "dbMs": 24.7,
+        "ms": 37,
+        "startMs": 7332,
+        "at": 1794351050168,
+        "traceId": "d2y6ei-1",
+        "dbMs": 36.7,
         "spans": [
           {
             "name": "db.users.find_by_email",
             "startMs": 0,
-            "ms": 9.6
+            "ms": 21.2
           },
           {
             "name": "db.sessions.insert",
-            "startMs": 9.6,
-            "ms": 15.1
+            "startMs": 21.3,
+            "ms": 15.5
           }
         ],
         "outbound": [],
@@ -638,21 +638,21 @@
         "route": "/api/invoices",
         "url": "/api/invoices?role=finance-admin",
         "status": 200,
-        "ms": 28,
-        "startMs": 6602,
-        "at": 1794349010417,
-        "traceId": "71e6sd-2",
-        "dbMs": 26.9,
+        "ms": 29,
+        "startMs": 7373,
+        "at": 1794351050209,
+        "traceId": "d2y6ei-2",
+        "dbMs": 28.9,
         "spans": [
           {
             "name": "db.invoices.select",
-            "startMs": 0.3,
-            "ms": 11.8
+            "startMs": -0.3,
+            "ms": 11.4
           },
           {
             "name": "db.line_items.select_batch",
-            "startMs": 12.1,
-            "ms": 15.1
+            "startMs": 11.1,
+            "ms": 17.5
           }
         ],
         "outbound": [],
@@ -678,20 +678,20 @@
     ],
     "slowest": [
       {
-        "method": "GET",
-        "route": "/api/invoices",
-        "count": 1,
-        "avgMs": 28,
-        "maxMs": 28,
-        "avgDbMs": 27
-      },
-      {
         "method": "POST",
         "route": "/api/session/login",
         "count": 1,
-        "avgMs": 25,
-        "maxMs": 25,
-        "avgDbMs": 25
+        "avgMs": 37,
+        "maxMs": 37,
+        "avgDbMs": 37
+      },
+      {
+        "method": "GET",
+        "route": "/api/invoices",
+        "count": 1,
+        "avgMs": 29,
+        "maxMs": 29,
+        "avgDbMs": 29
       }
     ],
     "spans": [],
@@ -743,66 +743,66 @@
   "snaps": [],
   "audit": [
     {
-      "at": "2026-11-10T22:16:45.303Z",
+      "at": "2026-11-10T22:50:44.956Z",
       "source": "bridge",
       "event": "paired",
-      "name": "node://66368",
+      "name": "node://48700",
       "ok": true
     },
     {
-      "at": "2026-11-10T22:16:47.793Z",
-      "source": "bridge",
-      "event": "paired",
-      "name": "http://localhost:5173/",
-      "ok": true
-    },
-    {
-      "at": "2026-11-10T22:16:47.902Z",
+      "at": "2026-11-10T22:50:47.694Z",
       "source": "bridge",
       "event": "paired",
       "name": "http://localhost:5173/",
       "ok": true
     },
     {
-      "at": "2026-11-10T22:16:48.566Z",
+      "at": "2026-11-10T22:50:48.046Z",
+      "source": "bridge",
+      "event": "paired",
+      "name": "http://localhost:5173/",
+      "ok": true
+    },
+    {
+      "at": "2026-11-10T22:50:48.342Z",
       "source": "agent",
       "event": "reins_list_actions",
       "ok": true,
       "ms": 4
     },
     {
-      "at": "2026-11-10T22:16:49.234Z",
+      "at": "2026-11-10T22:50:49.006Z",
       "source": "agent",
       "event": "reins_run_action",
       "name": "login-as-tester",
       "ok": true,
-      "ms": 668
+      "ms": 664
     },
     {
-      "at": "2026-11-10T22:16:49.443Z",
+      "at": "2026-11-10T22:50:49.224Z",
       "source": "agent",
       "event": "reins_server",
       "name": "/api/invoices",
       "ok": true,
-      "ms": 3
+      "ms": 2
     },
     {
-      "at": "2026-11-10T22:16:49.449Z",
+      "at": "2026-11-10T22:50:49.228Z",
       "source": "agent",
       "event": "reins_perf",
       "ok": true,
-      "ms": 5
+      "ms": 3
     },
     {
-      "at": "2026-11-10T22:16:49.508Z",
+      "at": "2026-11-10T22:50:49.297Z",
       "source": "agent",
       "event": "reins_report",
       "name": "before-n1-fix",
       "ok": true,
-      "ms": 58
+      "ms": 68
     },
     {
-      "at": "2026-11-10T22:16:49.514Z",
+      "at": "2026-11-10T22:50:49.303Z",
       "source": "agent",
       "event": "reins_run_action",
       "name": "set-db-query-mode",
@@ -810,27 +810,27 @@
       "ms": 2
     },
     {
-      "at": "2026-11-10T22:16:49.518Z",
+      "at": "2026-11-10T22:50:49.306Z",
       "source": "agent",
       "event": "reins_run_action",
       "name": "reset-server-metrics",
       "ok": true,
-      "ms": 3
+      "ms": 2
     },
     {
-      "at": "2026-11-10T22:16:49.618Z",
+      "at": "2026-11-10T22:50:49.396Z",
       "source": "bridge",
       "event": "paired",
       "name": "http://localhost:5173/",
       "ok": true
     },
     {
-      "at": "2026-11-10T22:16:50.451Z",
+      "at": "2026-11-10T22:50:50.245Z",
       "source": "agent",
       "event": "reins_run_action",
       "name": "login-as-tester",
       "ok": true,
-      "ms": 67
+      "ms": 85
     }
   ]
 }

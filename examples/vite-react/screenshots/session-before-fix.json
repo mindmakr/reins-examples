@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "title": "before-n1-fix",
-  "createdAt": "2026-11-10T22:16:49.500Z",
+  "createdAt": "2026-11-10T22:50:49.291Z",
   "reinsVersion": "0.1.0",
   "source": "bridge",
   "app": {
@@ -190,9 +190,9 @@
       "query": "",
       "lastServerTiming": {
         "route": "GET /api/invoices",
-        "appMs": 581,
-        "dbMs": 580.5,
-        "elP99Ms": 64.4
+        "appMs": 592,
+        "dbMs": 591.4,
+        "elP99Ms": 64.9
       },
       "totals": {
         "outstandingUsd": 11550,
@@ -255,7 +255,7 @@
           "endpoint": "/api/invoices?role=finance-admin",
           "status": 200,
           "note": "Synced 5 invoices",
-          "at": "22:16:49"
+          "at": "22:50:48"
         },
         {
           "id": "ACT-2",
@@ -263,7 +263,7 @@
           "endpoint": "/api/session/login",
           "status": 200,
           "note": "Signed in as Maya Lin (finance-admin)",
-          "at": "22:16:49"
+          "at": "22:50:48"
         },
         {
           "id": "ACT-1",
@@ -289,16 +289,16 @@
     {
       "method": "POST",
       "url": "/api/session/login",
-      "startMs": 1381,
-      "at": 1794349008569,
+      "startMs": 1313,
+      "at": 1794351048346,
       "requestHeaders": {
         "content-type": "application/json",
         "authorization": "[redacted]"
       },
       "requestBody": "[redacted]",
-      "traceId": "6wnwk7-1",
+      "traceId": "ks7d3t-1",
       "status": 200,
-      "ms": 43,
+      "ms": 38,
       "responseHeaders": {
         "cache-control": "no-store",
         "connection": "[redacted]",
@@ -312,15 +312,15 @@
     {
       "method": "GET",
       "url": "/api/invoices?role=finance-admin",
-      "startMs": 1425,
-      "at": 1794349008613,
+      "startMs": 1352,
+      "at": 1794351048385,
       "requestHeaders": {
         "content-type": "application/json",
         "authorization": "[redacted]"
       },
-      "traceId": "6wnwk7-2",
+      "traceId": "ks7d3t-2",
       "status": 200,
-      "ms": 597,
+      "ms": 605,
       "responseHeaders": {
         "cache-control": "no-store",
         "connection": "[redacted]",
@@ -335,213 +335,213 @@
   "errors": [],
   "perf": {
     "lifecycle": {
-      "ttfbMs": 441,
-      "domInteractiveMs": 458,
-      "domContentLoadedMs": 630,
-      "loadMs": 630,
+      "ttfbMs": 413,
+      "domInteractiveMs": 432,
+      "domContentLoadedMs": 590,
+      "loadMs": 591,
       "firstPaintMs": null,
       "firstContentfulPaintMs": null,
       "domNodes": 175,
-      "nowMs": 2268
+      "nowMs": 2218
     },
     "components": [
       {
         "id": "header",
-        "mountedAtMs": 698,
-        "lastRenderMs": 2046,
+        "mountedAtMs": 845,
+        "lastRenderMs": 1972,
         "renders": 4
       },
       {
         "id": "perf-hud",
-        "mountedAtMs": 698,
-        "lastRenderMs": 2046,
+        "mountedAtMs": 846,
+        "lastRenderMs": 1972,
         "renders": 4
       },
       {
         "id": "summary-cards",
-        "mountedAtMs": 698,
-        "lastRenderMs": 2046,
+        "mountedAtMs": 846,
+        "lastRenderMs": 1972,
         "renders": 4
       },
       {
         "id": "invoice-list",
-        "mountedAtMs": 698,
-        "lastRenderMs": 2046,
+        "mountedAtMs": 846,
+        "lastRenderMs": 1972,
         "renders": 4
       },
       {
         "id": "activity-log",
-        "mountedAtMs": 698,
-        "lastRenderMs": 2046,
+        "mountedAtMs": 846,
+        "lastRenderMs": 1972,
         "renders": 4
       }
     ],
     "api": {
       "totalCalls": 2,
       "failedCalls": 0,
-      "avgMs": 320,
-      "maxMs": 597,
+      "avgMs": 322,
+      "maxMs": 605,
       "slowest": {
         "method": "GET",
         "url": "/api/invoices?role=finance-admin",
         "status": 200,
-        "startMs": 1425,
-        "ms": 597,
-        "traceId": "6wnwk7-2"
+        "startMs": 1352,
+        "ms": 605,
+        "traceId": "ks7d3t-2"
       },
       "calls": [
         {
           "method": "POST",
           "url": "/api/session/login",
           "status": 200,
-          "startMs": 1381,
-          "ms": 43,
-          "traceId": "6wnwk7-1"
+          "startMs": 1313,
+          "ms": 38,
+          "traceId": "ks7d3t-1"
         },
         {
           "method": "GET",
           "url": "/api/invoices?role=finance-admin",
           "status": 200,
-          "startMs": 1425,
-          "ms": 597,
-          "traceId": "6wnwk7-2"
+          "startMs": 1352,
+          "ms": 605,
+          "traceId": "ks7d3t-2"
         }
       ]
     },
     "actions": [
       {
         "name": "[reins] login-as-tester",
-        "startMs": 1381,
-        "durationMs": 665
+        "startMs": 1311,
+        "durationMs": 661
       }
     ],
     "timeline": [
       {
         "kind": "lifecycle",
         "name": "ttfb",
-        "atMs": 441
+        "atMs": 413
       },
       {
         "kind": "lifecycle",
         "name": "domInteractive",
-        "atMs": 458
+        "atMs": 432
       },
       {
         "kind": "lifecycle",
         "name": "domContentLoaded",
-        "atMs": 630
+        "atMs": 590
       },
       {
         "kind": "lifecycle",
         "name": "load",
-        "atMs": 630
+        "atMs": 591
       },
       {
         "kind": "component-mount",
         "name": "header",
-        "atMs": 698
+        "atMs": 845
       },
       {
         "kind": "component-mount",
         "name": "perf-hud",
-        "atMs": 698
+        "atMs": 846
       },
       {
         "kind": "component-mount",
         "name": "summary-cards",
-        "atMs": 698
+        "atMs": 846
       },
       {
         "kind": "component-mount",
         "name": "invoice-list",
-        "atMs": 698
+        "atMs": 846
       },
       {
         "kind": "component-mount",
         "name": "activity-log",
-        "atMs": 698
-      },
-      {
-        "kind": "api",
-        "name": "POST /api/session/login",
-        "atMs": 1381,
-        "durationMs": 43,
-        "status": 200,
-        "traceId": "6wnwk7-1"
+        "atMs": 846
       },
       {
         "kind": "action",
         "name": "[reins] login-as-tester",
-        "atMs": 1381,
-        "durationMs": 665
+        "atMs": 1311,
+        "durationMs": 661
+      },
+      {
+        "kind": "api",
+        "name": "POST /api/session/login",
+        "atMs": 1313,
+        "durationMs": 38,
+        "status": 200,
+        "traceId": "ks7d3t-1"
       },
       {
         "kind": "server",
         "name": "POST /api/session/login",
-        "atMs": 1383,
-        "durationMs": 39,
+        "atMs": 1315,
+        "durationMs": 34,
         "status": 200,
-        "traceId": "6wnwk7-1",
-        "dbMs": 34.4,
+        "traceId": "ks7d3t-1",
+        "dbMs": 31.3,
         "spans": [
           {
             "name": "db.users.find_by_email",
-            "atMs": 1384,
-            "durationMs": 19.4
+            "atMs": 1316,
+            "durationMs": 16.4
           },
           {
             "name": "db.sessions.insert",
-            "atMs": 1403,
-            "durationMs": 15
+            "atMs": 1333,
+            "durationMs": 14.9
           }
         ]
       },
       {
         "kind": "api",
         "name": "GET /api/invoices?role=finance-admin",
-        "atMs": 1425,
-        "durationMs": 597,
+        "atMs": 1352,
+        "durationMs": 605,
         "status": 200,
-        "traceId": "6wnwk7-2"
+        "traceId": "ks7d3t-2"
       },
       {
         "kind": "server",
         "name": "GET /api/invoices",
-        "atMs": 1433,
-        "durationMs": 581,
+        "atMs": 1358,
+        "durationMs": 593,
         "status": 200,
-        "traceId": "6wnwk7-2",
-        "dbMs": 580.5,
+        "traceId": "ks7d3t-2",
+        "dbMs": 591.4,
         "spans": [
           {
             "name": "db.invoices.select",
-            "atMs": 1433,
-            "durationMs": 38.5
+            "atMs": 1359,
+            "durationMs": 47.2
           },
           {
             "name": "db.line_items.select",
-            "atMs": 1472,
-            "durationMs": 112.6
-          },
-          {
-            "name": "db.line_items.select",
-            "atMs": 1584,
+            "atMs": 1406,
             "durationMs": 108.2
           },
           {
             "name": "db.line_items.select",
-            "atMs": 1692,
-            "durationMs": 106.2
+            "atMs": 1514,
+            "durationMs": 108.8
           },
           {
             "name": "db.line_items.select",
-            "atMs": 1799,
-            "durationMs": 107.5
+            "atMs": 1623,
+            "durationMs": 108.5
           },
           {
             "name": "db.line_items.select",
-            "atMs": 1906,
-            "durationMs": 107.5
+            "atMs": 1731,
+            "durationMs": 108.7
+          },
+          {
+            "name": "db.line_items.select",
+            "atMs": 1840,
+            "durationMs": 110
           }
         ]
       }
@@ -551,40 +551,40 @@
     {
       "id": "header",
       "renders": 4,
-      "mountedAtMs": 698,
-      "lastRenderMs": 2046,
+      "mountedAtMs": 845,
+      "lastRenderMs": 1972,
       "nodes": 17,
       "issues": 0
     },
     {
       "id": "perf-hud",
       "renders": 4,
-      "mountedAtMs": 698,
-      "lastRenderMs": 2046,
+      "mountedAtMs": 846,
+      "lastRenderMs": 1972,
       "nodes": 41,
       "issues": 0
     },
     {
       "id": "summary-cards",
       "renders": 4,
-      "mountedAtMs": 698,
-      "lastRenderMs": 2046,
+      "mountedAtMs": 846,
+      "lastRenderMs": 1972,
       "nodes": 16,
       "issues": 0
     },
     {
       "id": "invoice-list",
       "renders": 4,
-      "mountedAtMs": 698,
-      "lastRenderMs": 2046,
+      "mountedAtMs": 846,
+      "lastRenderMs": 1972,
       "nodes": 66,
       "issues": 0
     },
     {
       "id": "activity-log",
       "renders": 4,
-      "mountedAtMs": 698,
-      "lastRenderMs": 2046,
+      "mountedAtMs": 846,
+      "lastRenderMs": 1972,
       "nodes": 23,
       "issues": 0
     }
@@ -593,14 +593,14 @@
   "server": {
     "runtime": {
       "node": "v22.22.0",
-      "pid": 66368,
+      "pid": 48700,
       "uptimeS": 6,
-      "rssMb": 179.4,
-      "heapUsedMb": 90.1,
+      "rssMb": 182.4,
+      "heapUsedMb": 91.8,
       "eventLoop": {
-        "p50Ms": 15.3,
-        "p99Ms": 64.4,
-        "maxMs": 864.6
+        "p50Ms": 15.5,
+        "p99Ms": 64.9,
+        "maxMs": 735.6
       }
     },
     "requests": [
@@ -609,21 +609,21 @@
         "route": "/api/session/login",
         "url": "/api/session/login",
         "status": 200,
-        "ms": 39,
-        "startMs": 4757,
-        "at": 1794349008571,
-        "traceId": "6wnwk7-1",
-        "dbMs": 34.4,
+        "ms": 34,
+        "startMs": 5513,
+        "at": 1794351048350,
+        "traceId": "ks7d3t-1",
+        "dbMs": 31.3,
         "spans": [
           {
             "name": "db.users.find_by_email",
-            "startMs": 0.9,
-            "ms": 19.4
+            "startMs": 1.1,
+            "ms": 16.4
           },
           {
             "name": "db.sessions.insert",
-            "startMs": 20.4,
-            "ms": 15
+            "startMs": 17.6,
+            "ms": 14.9
           }
         ],
         "outbound": [],
@@ -653,41 +653,41 @@
         "route": "/api/invoices",
         "url": "/api/invoices?role=finance-admin",
         "status": 200,
-        "ms": 581,
-        "startMs": 4800,
-        "at": 1794349008614,
-        "traceId": "6wnwk7-2",
-        "dbMs": 580.5,
+        "ms": 593,
+        "startMs": 5560,
+        "at": 1794351048397,
+        "traceId": "ks7d3t-2",
+        "dbMs": 591.4,
         "spans": [
           {
             "name": "db.invoices.select",
-            "startMs": -0.1,
-            "ms": 38.5
+            "startMs": 0.6,
+            "ms": 47.2
           },
           {
             "name": "db.line_items.select",
-            "startMs": 38.5,
-            "ms": 112.6
-          },
-          {
-            "name": "db.line_items.select",
-            "startMs": 151.1,
+            "startMs": 47.9,
             "ms": 108.2
           },
           {
             "name": "db.line_items.select",
-            "startMs": 259.3,
-            "ms": 106.2
+            "startMs": 156.1,
+            "ms": 108.8
           },
           {
             "name": "db.line_items.select",
-            "startMs": 365.5,
-            "ms": 107.5
+            "startMs": 264.9,
+            "ms": 108.5
           },
           {
             "name": "db.line_items.select",
-            "startMs": 473.1,
-            "ms": 107.5
+            "startMs": 373.3,
+            "ms": 108.7
+          },
+          {
+            "name": "db.line_items.select",
+            "startMs": 482,
+            "ms": 110
           }
         ],
         "outbound": [],
@@ -716,17 +716,17 @@
         "method": "GET",
         "route": "/api/invoices",
         "count": 1,
-        "avgMs": 581,
-        "maxMs": 581,
-        "avgDbMs": 581
+        "avgMs": 593,
+        "maxMs": 593,
+        "avgDbMs": 591
       },
       {
         "method": "POST",
         "route": "/api/session/login",
         "count": 1,
-        "avgMs": 39,
-        "maxMs": 39,
-        "avgDbMs": 34
+        "avgMs": 34,
+        "maxMs": 34,
+        "avgDbMs": 31
       }
     ],
     "spans": [],
@@ -778,55 +778,55 @@
   "snaps": [],
   "audit": [
     {
-      "at": "2026-11-10T22:16:45.303Z",
+      "at": "2026-11-10T22:50:44.956Z",
       "source": "bridge",
       "event": "paired",
-      "name": "node://66368",
+      "name": "node://48700",
       "ok": true
     },
     {
-      "at": "2026-11-10T22:16:47.793Z",
-      "source": "bridge",
-      "event": "paired",
-      "name": "http://localhost:5173/",
-      "ok": true
-    },
-    {
-      "at": "2026-11-10T22:16:47.902Z",
+      "at": "2026-11-10T22:50:47.694Z",
       "source": "bridge",
       "event": "paired",
       "name": "http://localhost:5173/",
       "ok": true
     },
     {
-      "at": "2026-11-10T22:16:48.566Z",
+      "at": "2026-11-10T22:50:48.046Z",
+      "source": "bridge",
+      "event": "paired",
+      "name": "http://localhost:5173/",
+      "ok": true
+    },
+    {
+      "at": "2026-11-10T22:50:48.342Z",
       "source": "agent",
       "event": "reins_list_actions",
       "ok": true,
       "ms": 4
     },
     {
-      "at": "2026-11-10T22:16:49.234Z",
+      "at": "2026-11-10T22:50:49.006Z",
       "source": "agent",
       "event": "reins_run_action",
       "name": "login-as-tester",
       "ok": true,
-      "ms": 668
+      "ms": 664
     },
     {
-      "at": "2026-11-10T22:16:49.443Z",
+      "at": "2026-11-10T22:50:49.224Z",
       "source": "agent",
       "event": "reins_server",
       "name": "/api/invoices",
       "ok": true,
-      "ms": 3
+      "ms": 2
     },
     {
-      "at": "2026-11-10T22:16:49.449Z",
+      "at": "2026-11-10T22:50:49.228Z",
       "source": "agent",
       "event": "reins_perf",
       "ok": true,
-      "ms": 5
+      "ms": 3
     }
   ]
 }
