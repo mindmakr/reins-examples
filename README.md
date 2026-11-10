@@ -8,6 +8,24 @@ Instead of clicking by pixels and guessing what happened, an agent paired with *
 
 ---
 
+## New here? Try it in one prompt
+
+Paste this into your coding agent (Claude Code, Codex, Antigravity, Cursor, Gemini CLI):
+
+```text
+Clone https://github.com/mindmakr/reins-examples, go into examples/vite-react,
+run npm install and npm run demo:agent, then show me the screenshots in
+examples/vite-react/screenshots and explain what reins_perf and reins_dom found.
+After that, set up reins and Coordinator in my own project the same way
+(https://github.com/mindmakr/reins and https://github.com/mindmakr/coordinator).
+```
+
+You'll see an agent sign in, pay an invoice, switch the app to Arabic and dark mode, take pictures of each panel, and report how fast the page and each panel appeared and how long each API call took, without clicking a single pixel. The same setup works on your app.
+
+**Vibe coding the first version is fine.** The trouble starts later: an agent changes something, the screen still looks right, but it is now slower, calls an API in a loop, or leaks a token. reins lets your agent see those things; [Coordinator](https://github.com/mindmakr/coordinator) makes a second agent check every change against a bar before it merges. Use both when the app has to keep working.
+
+---
+
 ## Examples Roadmap
 
 | Example | Stack | Highlights | Status |
