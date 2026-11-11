@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "server": "node server/index.mjs",
     "build": "vite build && reins verify dist",
     "preview": "vite preview",
     "demo:agent": "node scripts/DriveAndSnap.mjs",

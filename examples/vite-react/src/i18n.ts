@@ -15,8 +15,11 @@ export interface Translations {
   hudLifecycle: string;
   hudComponents: string;
   hudApiLatency: string;
+  hudServerTiming: string;
   hudLayoutHealth: string;
   hudZeroClip: string;
+  hudRecordBtn: string;
+  hudExportBtn: string;
   summaryTitle: string;
   totalOutstanding: string;
   totalOutstandingSub: string;
@@ -59,13 +62,16 @@ export const TRANSLATIONS: Record<Locale, Translations> = {
     loginAsAdmin: 'Sign in as Finance Admin',
     themeLight: 'Light',
     themeDark: 'Dark',
-    hudTitle: 'Live Runtime Instruments (reins_perf · reins_dom)',
-    hudSubtitle: 'Lucid Coding Principle #2 & #8 — lifecycle timings, panel mounts/renders, API latency & CSS layout check',
+    hudTitle: 'Live Runtime Instruments (reins_perf · reins_dom · reins_server)',
+    hudSubtitle: 'Lucid Coding Principle #2 & #8 — lifecycle, panel renders, API + backend DB spans & CSS layout check',
     hudLifecycle: 'Page Lifecycle',
     hudComponents: 'Panel Mounts & Renders',
     hudApiLatency: 'API Call Stats',
+    hudServerTiming: 'Backend (reins/node)',
     hudLayoutHealth: 'DOM & CSS Layout',
     hudZeroClip: '0 clipping issues',
+    hudRecordBtn: 'Record Session',
+    hudExportBtn: 'Export Session (.md)',
     summaryTitle: 'Receivables Overview',
     totalOutstanding: 'Total Outstanding',
     totalOutstandingSub: 'Pending + overdue receivables',
@@ -106,13 +112,16 @@ export const TRANSLATIONS: Record<Locale, Translations> = {
     loginAsAdmin: 'تسجيل الدخول كمدير مالي',
     themeLight: 'فاتح',
     themeDark: 'داكن',
-    hudTitle: 'مؤشرات الأداء والتشخيص الحية (reins_perf · reins_dom)',
-    hudSubtitle: 'مبادئ البرمجة الواعية #2 و #8 — أوقات التحميل، عدد مرات رسم اللوحات، زمن استجابة API وفحص تخطيط RTL',
+    hudTitle: 'مؤشرات الأداء والتشخيص الحية (reins_perf · reins_dom · reins_server)',
+    hudSubtitle: 'مبادئ البرمجة الواعية #2 و #8 — أوقات التحميل، اللوحات، استعلامات قاعدة البيانات الخلفية وتخطيط RTL',
     hudLifecycle: 'دورة حياة الصفحة',
     hudComponents: 'تركيب ورسم اللوحات',
     hudApiLatency: 'إحصائيات طلبات API',
+    hudServerTiming: 'الخادم الخلفي (reins/node)',
     hudLayoutHealth: 'فحص DOM وتخطيط CSS',
     hudZeroClip: 'لا توجد مشاكل قص',
+    hudRecordBtn: 'تسجيل الجلسة',
+    hudExportBtn: 'تصدير التقرير (.md)',
     summaryTitle: 'ملخص المستحقات المالية',
     totalOutstanding: 'إجمالي المستحقات',
     totalOutstandingSub: 'الفواتير المعلقة والمتأخرة',
@@ -153,13 +162,16 @@ export const TRANSLATIONS: Record<Locale, Translations> = {
     loginAsAdmin: 'Connexion Admin Finance',
     themeLight: 'Clair',
     themeDark: 'Sombre',
-    hudTitle: 'Instruments Runtime en Direct (reins_perf · reins_dom)',
-    hudSubtitle: 'Principes Lucid Coding #2 & #8 — cycle de vie, montages/rendus, latence API et diagnostic CSS',
+    hudTitle: 'Instruments Runtime en Direct (reins_perf · reins_dom · reins_server)',
+    hudSubtitle: 'Principes Lucid Coding #2 & #8 — cycle de vie, rendus, latence API + spans DB serveur et CSS',
     hudLifecycle: 'Cycle de Page',
     hudComponents: 'Montages & Rendus',
     hudApiLatency: 'Latence API',
+    hudServerTiming: 'Serveur (reins/node)',
     hudLayoutHealth: 'Diagnostic DOM & CSS',
     hudZeroClip: '0 débordement détecté',
+    hudRecordBtn: 'Enregistrer',
+    hudExportBtn: 'Exporter Session (.md)',
     summaryTitle: 'Aperçu des Créances',
     totalOutstanding: 'Total en Attente',
     totalOutstandingSub: 'Factures en attente et en retard',

@@ -1,6 +1,7 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { reins } from 'reins';
 import { ReinsPanel, useReinsAction } from 'reins/react';
+import { exportSession, isRecording, startRecording } from 'reins/record';
 import { TRANSLATIONS, type Locale } from './i18n';
 import {
   getVisibleInvoices,
@@ -183,8 +184,28 @@ export function App() {
 
       <ReinsPanel id="perf-hud" className="panel-card hud-bar">
         <div className="hud-header">
-          <h2 className="hud-title">{t.hudTitle}</h2>
-          <span className="hud-subtitle">{t.hudSubtitle}</span>
+          <div>
+            <h2 className="hud-title">{t.hudTitle}</h2>
+            <span className="hud-subtitle">{t.hudSubtitle}</span>
+          </div>
+          {import.meta.env.DEV && (
+            <div className="hud-actions">
+              <button
+                type="button"
+                className="btn-hud"
+                onClick={() => {
+                  if (!isRecording()) {
+                    startRecording({ pill: true });
+                    setTick((n) => n + 1);
+                  } else {
+                    exportSession({ title: 'payday-tester-session' });
+                  }
+                }}
+              >
+                {isRecording() ? t.hudExportBtn : t.hudRecordBtn}
+              </button>
+            </div>
+          )}
         </div>
         <div className="hud-grid">
           <div className="hud-box">
@@ -213,8 +234,25 @@ export function App() {
             <div className="hud-pills">
               <span className="hud-pill">{perf.api.totalCalls} calls</span>
               <span className="hud-pill">avg {perf.api.avgMs}ms</span>
-              <span className="hud-pill">max {perf.api.maxMs}ms</span>
+              <span className={`hud-pill ${perf.api.maxMs > 500 ? 'warn' : 'ok'}`}>max {perf.api.maxMs}ms</span>
               <span className="hud-pill ok">{perf.api.failedCalls} failed</span>
+            </div>
+          </div>
+
+          <div className="hud-box">
+            <div className="hud-box-label">{t.hudServerTiming}</div>
+            <div className="hud-pills">
+              {snap.lastServerTiming ? (
+                <>
+                  <span className="hud-pill">app {snap.lastServerTiming.appMs}ms</span>
+                  <span className={`hud-pill ${snap.lastServerTiming.dbMs > 200 ? 'warn' : 'ok'}`}>
+                    db {snap.lastServerTiming.dbMs}ms
+                  </span>
+                  <span className="hud-pill">el-p99 {snap.lastServerTiming.elP99Ms}ms</span>
+                </>
+              ) : (
+                <span className="hud-pill">idle (sign in to query)</span>
+              )}
             </div>
           </div>
 

@@ -29,6 +29,13 @@ export interface UserProfile {
   role: TesterRole;
 }
 
+export interface ServerTimingSummary {
+  route: string;
+  appMs: number;
+  dbMs: number;
+  elP99Ms: number;
+}
+
 export interface AppSnapshot {
   user: UserProfile | null;
   /** Intentionally named with `Token` so `reins_state` demonstrates automatic secret redaction (`[redacted]`). */
@@ -38,6 +45,7 @@ export interface AppSnapshot {
   theme: ThemeMode;
   filter: FilterStatus;
   query: string;
+  lastServerTiming: ServerTimingSummary | null;
   totals: {
     outstandingUsd: number;
     paidThisMonthUsd: number;
@@ -97,6 +105,7 @@ let locale: Locale = 'en';
 let theme: ThemeMode = 'light';
 let filter: FilterStatus = 'all';
 let query = '';
+let lastServerTiming: ServerTimingSummary | null = null;
 let invoices: Invoice[] = INITIAL_INVOICES.map((inv) => ({ ...inv }));
 let activityLog: ActivityEntry[] = [
   {
@@ -139,6 +148,21 @@ function recordActivity(method: string, endpoint: string, status: number, note: 
   ];
 }
 
+export function parseServerTiming(header: string | null, fallbackRoute: string): ServerTimingSummary | null {
+  if (!header) return null;
+  const dur = (name: string) => {
+    const m = header.match(new RegExp(`\\b${name};dur=([0-9.]+)`));
+    return m ? Math.round(Number(m[1]) * 10) / 10 : 0;
+  };
+  const descMatch = header.match(/desc="([^"]+)"/);
+  return {
+    route: descMatch ? descMatch[1] : fallbackRoute,
+    appMs: dur('app'),
+    dbMs: dur('db'),
+    elP99Ms: dur('el-p99'),
+  };
+}
+
 async function callDevApi(method: 'GET' | 'POST', endpoint: string, body?: unknown): Promise<number> {
   if (typeof fetch !== 'function' || typeof window === 'undefined') {
     return 200;
@@ -152,6 +176,8 @@ async function callDevApi(method: 'GET' | 'POST', endpoint: string, body?: unkno
       },
       body: body ? JSON.stringify(body) : undefined,
     });
+    const st = parseServerTiming(res.headers.get('server-timing'), `${method} ${endpoint.split('?')[0]}`);
+    if (st) lastServerTiming = st;
     return res.status;
   } catch {
     return 200;
@@ -201,6 +227,7 @@ export function getSnapshot(): AppSnapshot {
     theme,
     filter,
     query,
+    lastServerTiming: lastServerTiming ? { ...lastServerTiming } : null,
     totals: computeTotals(invoices),
     invoices: invoices.map((i) => ({ ...i })),
     visibleInvoiceIds: visible.map((i) => i.id),
@@ -303,6 +330,7 @@ export const store = {
     theme = 'light';
     filter = 'all';
     query = '';
+    lastServerTiming = null;
     invoices = INITIAL_INVOICES.map((inv) => ({ ...inv }));
     notify();
   },

@@ -1,0 +1,836 @@
+{
+  "schemaVersion": 1,
+  "title": "after-batched-fix",
+  "createdAt": "2026-11-10T22:50:50.480Z",
+  "reinsVersion": "0.1.0",
+  "source": "bridge",
+  "app": {
+    "url": "http://localhost:5173/",
+    "title": "Payday Invoice Studio — Lucid Billing Desk (reins + Vite + React)",
+    "platform": "web",
+    "meta": {
+      "app": "payday-invoice-studio",
+      "framework": "vite-react"
+    }
+  },
+  "actions": [
+    {
+      "name": "login-as-tester",
+      "description": "Sign in as a seeded dev tester (finance-admin or viewer) and sync /api/invoices",
+      "input": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "finance-admin",
+              "viewer"
+            ]
+          }
+        }
+      },
+      "consequential": false,
+      "readOnly": false
+    },
+    {
+      "name": "set-locale",
+      "description": "Switch the UI locale (en LTR, ar RTL, or fr LTR)",
+      "input": {
+        "type": "object",
+        "properties": {
+          "locale": {
+            "type": "string",
+            "enum": [
+              "en",
+              "ar",
+              "fr"
+            ]
+          }
+        },
+        "required": [
+          "locale"
+        ]
+      },
+      "consequential": false,
+      "readOnly": false
+    },
+    {
+      "name": "set-theme",
+      "description": "Switch between light and dark themes",
+      "input": {
+        "type": "object",
+        "properties": {
+          "theme": {
+            "type": "string",
+            "enum": [
+              "light",
+              "dark"
+            ]
+          }
+        },
+        "required": [
+          "theme"
+        ]
+      },
+      "consequential": false,
+      "readOnly": false
+    },
+    {
+      "name": "filter-invoices",
+      "description": "Filter invoices by status (all, pending, paid, overdue) and optional search query",
+      "input": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "all",
+              "pending",
+              "paid",
+              "overdue"
+            ]
+          },
+          "query": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "consequential": false,
+      "readOnly": true
+    },
+    {
+      "name": "mark-invoice-paid",
+      "description": "Mark a single invoice as paid via POST /api/invoices/:id/pay",
+      "input": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Invoice ID such as INV-1042"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "consequential": false,
+      "readOnly": false
+    },
+    {
+      "name": "void-overdue-invoices",
+      "description": "Write off and void all overdue invoices (consequential; requires confirm: true)",
+      "input": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string"
+          }
+        }
+      },
+      "consequential": true,
+      "readOnly": false
+    },
+    {
+      "name": "get-db-query-mode",
+      "description": "Inspect whether /api/invoices uses the unbatched N+1 query (n+1-slow) or batched IN (...) query (batched-fast)",
+      "input": {
+        "type": "object",
+        "properties": {}
+      },
+      "consequential": false,
+      "readOnly": true
+    },
+    {
+      "name": "set-db-query-mode",
+      "description": "Switch /api/invoices between the N+1 slow query (n+1-slow) and the batched query fix (batched-fast)",
+      "input": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "n+1-slow",
+              "batched-fast"
+            ]
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      },
+      "consequential": false,
+      "readOnly": false
+    },
+    {
+      "name": "reset-server-metrics",
+      "description": "Clear recorded server request/span ring buffers before capturing a fresh post-fix session report",
+      "input": {
+        "type": "object",
+        "properties": {}
+      },
+      "consequential": false,
+      "readOnly": false
+    }
+  ],
+  "state": {
+    "app": {
+      "user": {
+        "name": "Maya Lin",
+        "email": "maya.lin@payday.example",
+        "role": "finance-admin"
+      },
+      "sessionToken": "[redacted]",
+      "locale": "en",
+      "dir": "ltr",
+      "theme": "light",
+      "filter": "all",
+      "query": "",
+      "lastServerTiming": {
+        "route": "GET /api/invoices",
+        "appMs": 29,
+        "dbMs": 28.9,
+        "elP99Ms": 63.9
+      },
+      "totals": {
+        "outstandingUsd": 11550,
+        "paidThisMonthUsd": 9950,
+        "overdueCount": 2
+      },
+      "invoices": [
+        {
+          "id": "INV-1041",
+          "client": "Northwind Logistics Ltd.",
+          "clientAr": "شركة نورث ويند للخدمات اللوجستية",
+          "dueDate": "2026-10-28",
+          "amount": 4850,
+          "status": "paid"
+        },
+        {
+          "id": "INV-1042",
+          "client": "Al-Bahr Maritime Systems",
+          "clientAr": "أنظمة البحر الملاحية",
+          "dueDate": "2026-10-14",
+          "amount": 3200,
+          "status": "overdue"
+        },
+        {
+          "id": "INV-1043",
+          "client": "Atelier Lumière SAS",
+          "clientAr": "أتيليه لوميير للتصميم",
+          "dueDate": "2026-11-18",
+          "amount": 6400,
+          "status": "pending"
+        },
+        {
+          "id": "INV-1044",
+          "client": "Kestrel Cloud Analytics",
+          "clientAr": "كيسترل لتحليلات السحابة",
+          "dueDate": "2026-10-05",
+          "amount": 1950,
+          "status": "overdue"
+        },
+        {
+          "id": "INV-1045",
+          "client": "Vanguard Solar Co-op",
+          "clientAr": "تعاونية فانغارد للطاقة الشمسية",
+          "dueDate": "2026-11-24",
+          "amount": 5100,
+          "status": "paid"
+        }
+      ],
+      "visibleInvoiceIds": [
+        "INV-1041",
+        "INV-1042",
+        "INV-1043",
+        "INV-1044",
+        "INV-1045"
+      ],
+      "activityLog": [
+        {
+          "id": "ACT-3",
+          "method": "GET",
+          "endpoint": "/api/invoices?role=finance-admin",
+          "status": 200,
+          "note": "Synced 5 invoices",
+          "at": "22:50:50"
+        },
+        {
+          "id": "ACT-2",
+          "method": "POST",
+          "endpoint": "/api/session/login",
+          "status": 200,
+          "note": "Signed in as Maya Lin (finance-admin)",
+          "at": "22:50:50"
+        },
+        {
+          "id": "ACT-1",
+          "method": "READY",
+          "endpoint": "/__reins/token",
+          "status": 200,
+          "note": "Dev workspace initialized; waiting for agent or tester actions",
+          "at": "09:00:00"
+        }
+      ]
+    },
+    "route": {
+      "pathname": "/",
+      "search": "",
+      "hash": ""
+    },
+    "location": "http://localhost:5173/",
+    "localStorage": {},
+    "sessionStorage": {},
+    "cookies": {}
+  },
+  "network": [
+    {
+      "method": "POST",
+      "url": "/api/session/login",
+      "startMs": 849,
+      "at": 1794351050166,
+      "requestHeaders": {
+        "content-type": "application/json",
+        "authorization": "[redacted]"
+      },
+      "requestBody": "[redacted]",
+      "traceId": "d2y6ei-1",
+      "status": 200,
+      "ms": 41,
+      "responseHeaders": {
+        "cache-control": "no-store",
+        "connection": "[redacted]",
+        "content-type": "application/json",
+        "date": "[redacted]",
+        "keep-alive": "[redacted]",
+        "server-timing": "[redacted]",
+        "transfer-encoding": "[redacted]"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "/api/invoices?role=finance-admin",
+      "startMs": 891,
+      "at": 1794351050207,
+      "requestHeaders": {
+        "content-type": "application/json",
+        "authorization": "[redacted]"
+      },
+      "traceId": "d2y6ei-2",
+      "status": 200,
+      "ms": 32,
+      "responseHeaders": {
+        "cache-control": "no-store",
+        "connection": "[redacted]",
+        "content-type": "application/json",
+        "date": "[redacted]",
+        "keep-alive": "[redacted]",
+        "server-timing": "[redacted]",
+        "transfer-encoding": "[redacted]"
+      }
+    }
+  ],
+  "errors": [],
+  "perf": {
+    "lifecycle": {
+      "ttfbMs": 8,
+      "domInteractiveMs": 21,
+      "domContentLoadedMs": 47,
+      "loadMs": 48,
+      "firstPaintMs": 68,
+      "firstContentfulPaintMs": 116,
+      "domNodes": 175,
+      "nowMs": 1147
+    },
+    "components": [
+      {
+        "id": "header",
+        "mountedAtMs": 76,
+        "lastRenderMs": 928,
+        "renders": 4
+      },
+      {
+        "id": "perf-hud",
+        "mountedAtMs": 76,
+        "lastRenderMs": 928,
+        "renders": 4
+      },
+      {
+        "id": "summary-cards",
+        "mountedAtMs": 76,
+        "lastRenderMs": 928,
+        "renders": 4
+      },
+      {
+        "id": "invoice-list",
+        "mountedAtMs": 76,
+        "lastRenderMs": 928,
+        "renders": 4
+      },
+      {
+        "id": "activity-log",
+        "mountedAtMs": 76,
+        "lastRenderMs": 928,
+        "renders": 4
+      }
+    ],
+    "api": {
+      "totalCalls": 2,
+      "failedCalls": 0,
+      "avgMs": 37,
+      "maxMs": 41,
+      "slowest": {
+        "method": "POST",
+        "url": "/api/session/login",
+        "status": 200,
+        "startMs": 849,
+        "ms": 41,
+        "traceId": "d2y6ei-1"
+      },
+      "calls": [
+        {
+          "method": "POST",
+          "url": "/api/session/login",
+          "status": 200,
+          "startMs": 849,
+          "ms": 41,
+          "traceId": "d2y6ei-1"
+        },
+        {
+          "method": "GET",
+          "url": "/api/invoices?role=finance-admin",
+          "status": 200,
+          "startMs": 891,
+          "ms": 32,
+          "traceId": "d2y6ei-2"
+        }
+      ]
+    },
+    "actions": [
+      {
+        "name": "[reins] login-as-tester",
+        "startMs": 849,
+        "durationMs": 80
+      }
+    ],
+    "timeline": [
+      {
+        "kind": "lifecycle",
+        "name": "ttfb",
+        "atMs": 8
+      },
+      {
+        "kind": "lifecycle",
+        "name": "domInteractive",
+        "atMs": 21
+      },
+      {
+        "kind": "lifecycle",
+        "name": "domContentLoaded",
+        "atMs": 47
+      },
+      {
+        "kind": "lifecycle",
+        "name": "load",
+        "atMs": 48
+      },
+      {
+        "kind": "component-mount",
+        "name": "header",
+        "atMs": 76
+      },
+      {
+        "kind": "component-mount",
+        "name": "perf-hud",
+        "atMs": 76
+      },
+      {
+        "kind": "component-mount",
+        "name": "summary-cards",
+        "atMs": 76
+      },
+      {
+        "kind": "component-mount",
+        "name": "invoice-list",
+        "atMs": 76
+      },
+      {
+        "kind": "component-mount",
+        "name": "activity-log",
+        "atMs": 76
+      },
+      {
+        "kind": "lifecycle",
+        "name": "firstContentfulPaint",
+        "atMs": 116
+      },
+      {
+        "kind": "api",
+        "name": "POST /api/session/login",
+        "atMs": 849,
+        "durationMs": 41,
+        "status": 200,
+        "traceId": "d2y6ei-1"
+      },
+      {
+        "kind": "action",
+        "name": "[reins] login-as-tester",
+        "atMs": 849,
+        "durationMs": 80
+      },
+      {
+        "kind": "server",
+        "name": "POST /api/session/login",
+        "atMs": 851,
+        "durationMs": 37,
+        "status": 200,
+        "traceId": "d2y6ei-1",
+        "dbMs": 36.7,
+        "spans": [
+          {
+            "name": "db.users.find_by_email",
+            "atMs": 851,
+            "durationMs": 21.2
+          },
+          {
+            "name": "db.sessions.insert",
+            "atMs": 872,
+            "durationMs": 15.5
+          }
+        ]
+      },
+      {
+        "kind": "api",
+        "name": "GET /api/invoices?role=finance-admin",
+        "atMs": 891,
+        "durationMs": 32,
+        "status": 200,
+        "traceId": "d2y6ei-2"
+      },
+      {
+        "kind": "server",
+        "name": "GET /api/invoices",
+        "atMs": 893,
+        "durationMs": 29,
+        "status": 200,
+        "traceId": "d2y6ei-2",
+        "dbMs": 28.9,
+        "spans": [
+          {
+            "name": "db.invoices.select",
+            "atMs": 893,
+            "durationMs": 11.4
+          },
+          {
+            "name": "db.line_items.select_batch",
+            "atMs": 904,
+            "durationMs": 17.5
+          }
+        ]
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": "header",
+      "renders": 4,
+      "mountedAtMs": 76,
+      "lastRenderMs": 928,
+      "nodes": 17,
+      "issues": 0
+    },
+    {
+      "id": "perf-hud",
+      "renders": 4,
+      "mountedAtMs": 76,
+      "lastRenderMs": 928,
+      "nodes": 41,
+      "issues": 0
+    },
+    {
+      "id": "summary-cards",
+      "renders": 4,
+      "mountedAtMs": 76,
+      "lastRenderMs": 928,
+      "nodes": 16,
+      "issues": 0
+    },
+    {
+      "id": "invoice-list",
+      "renders": 4,
+      "mountedAtMs": 76,
+      "lastRenderMs": 928,
+      "nodes": 66,
+      "issues": 0
+    },
+    {
+      "id": "activity-log",
+      "renders": 4,
+      "mountedAtMs": 76,
+      "lastRenderMs": 928,
+      "nodes": 23,
+      "issues": 0
+    }
+  ],
+  "domIssues": [],
+  "server": {
+    "runtime": {
+      "node": "v22.22.0",
+      "pid": 48700,
+      "uptimeS": 8,
+      "rssMb": 183,
+      "heapUsedMb": 94.8,
+      "eventLoop": {
+        "p50Ms": 15.5,
+        "p99Ms": 63.9,
+        "maxMs": 735.6
+      }
+    },
+    "requests": [
+      {
+        "method": "POST",
+        "route": "/api/session/login",
+        "url": "/api/session/login",
+        "status": 200,
+        "ms": 37,
+        "startMs": 7332,
+        "at": 1794351050168,
+        "traceId": "d2y6ei-1",
+        "dbMs": 36.7,
+        "spans": [
+          {
+            "name": "db.users.find_by_email",
+            "startMs": 0,
+            "ms": 21.2
+          },
+          {
+            "name": "db.sessions.insert",
+            "startMs": 21.3,
+            "ms": 15.5
+          }
+        ],
+        "outbound": [],
+        "requestHeaders": {
+          "host": "[redacted]",
+          "connection": "[redacted]",
+          "content-length": "58",
+          "x-reins-trace": "[redacted]",
+          "sec-ch-ua-platform": "[redacted]",
+          "authorization": "[redacted]",
+          "user-agent": "[redacted]",
+          "sec-ch-ua": "[redacted]",
+          "content-type": "application/json",
+          "sec-ch-ua-mobile": "[redacted]",
+          "accept": "[redacted]",
+          "origin": "[redacted]",
+          "sec-fetch-site": "[redacted]",
+          "sec-fetch-mode": "[redacted]",
+          "sec-fetch-dest": "[redacted]",
+          "referer": "[redacted]",
+          "accept-encoding": "[redacted]",
+          "accept-language": "[redacted]"
+        }
+      },
+      {
+        "method": "GET",
+        "route": "/api/invoices",
+        "url": "/api/invoices?role=finance-admin",
+        "status": 200,
+        "ms": 29,
+        "startMs": 7373,
+        "at": 1794351050209,
+        "traceId": "d2y6ei-2",
+        "dbMs": 28.9,
+        "spans": [
+          {
+            "name": "db.invoices.select",
+            "startMs": -0.3,
+            "ms": 11.4
+          },
+          {
+            "name": "db.line_items.select_batch",
+            "startMs": 11.1,
+            "ms": 17.5
+          }
+        ],
+        "outbound": [],
+        "requestHeaders": {
+          "host": "[redacted]",
+          "connection": "[redacted]",
+          "x-reins-trace": "[redacted]",
+          "sec-ch-ua-platform": "[redacted]",
+          "authorization": "[redacted]",
+          "user-agent": "[redacted]",
+          "sec-ch-ua": "[redacted]",
+          "content-type": "application/json",
+          "sec-ch-ua-mobile": "[redacted]",
+          "accept": "[redacted]",
+          "sec-fetch-site": "[redacted]",
+          "sec-fetch-mode": "[redacted]",
+          "sec-fetch-dest": "[redacted]",
+          "referer": "[redacted]",
+          "accept-encoding": "[redacted]",
+          "accept-language": "[redacted]"
+        }
+      }
+    ],
+    "slowest": [
+      {
+        "method": "POST",
+        "route": "/api/session/login",
+        "count": 1,
+        "avgMs": 37,
+        "maxMs": 37,
+        "avgDbMs": 37
+      },
+      {
+        "method": "GET",
+        "route": "/api/invoices",
+        "count": 1,
+        "avgMs": 29,
+        "maxMs": 29,
+        "avgDbMs": 29
+      }
+    ],
+    "spans": [],
+    "outbound": [],
+    "actions": [
+      {
+        "name": "get-db-query-mode",
+        "description": "Inspect whether /api/invoices uses the unbatched N+1 query (n+1-slow) or batched IN (...) query (batched-fast)",
+        "input": {
+          "type": "object",
+          "properties": {}
+        },
+        "consequential": false,
+        "readOnly": true
+      },
+      {
+        "name": "set-db-query-mode",
+        "description": "Switch /api/invoices between the N+1 slow query (n+1-slow) and the batched query fix (batched-fast)",
+        "input": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "n+1-slow",
+                "batched-fast"
+              ]
+            }
+          },
+          "required": [
+            "mode"
+          ]
+        },
+        "consequential": false,
+        "readOnly": false
+      },
+      {
+        "name": "reset-server-metrics",
+        "description": "Clear recorded server request/span ring buffers before capturing a fresh post-fix session report",
+        "input": {
+          "type": "object",
+          "properties": {}
+        },
+        "consequential": false,
+        "readOnly": false
+      }
+    ]
+  },
+  "snaps": [],
+  "audit": [
+    {
+      "at": "2026-11-10T22:50:44.956Z",
+      "source": "bridge",
+      "event": "paired",
+      "name": "node://48700",
+      "ok": true
+    },
+    {
+      "at": "2026-11-10T22:50:47.694Z",
+      "source": "bridge",
+      "event": "paired",
+      "name": "http://localhost:5173/",
+      "ok": true
+    },
+    {
+      "at": "2026-11-10T22:50:48.046Z",
+      "source": "bridge",
+      "event": "paired",
+      "name": "http://localhost:5173/",
+      "ok": true
+    },
+    {
+      "at": "2026-11-10T22:50:48.342Z",
+      "source": "agent",
+      "event": "reins_list_actions",
+      "ok": true,
+      "ms": 4
+    },
+    {
+      "at": "2026-11-10T22:50:49.006Z",
+      "source": "agent",
+      "event": "reins_run_action",
+      "name": "login-as-tester",
+      "ok": true,
+      "ms": 664
+    },
+    {
+      "at": "2026-11-10T22:50:49.224Z",
+      "source": "agent",
+      "event": "reins_server",
+      "name": "/api/invoices",
+      "ok": true,
+      "ms": 2
+    },
+    {
+      "at": "2026-11-10T22:50:49.228Z",
+      "source": "agent",
+      "event": "reins_perf",
+      "ok": true,
+      "ms": 3
+    },
+    {
+      "at": "2026-11-10T22:50:49.297Z",
+      "source": "agent",
+      "event": "reins_report",
+      "name": "before-n1-fix",
+      "ok": true,
+      "ms": 68
+    },
+    {
+      "at": "2026-11-10T22:50:49.303Z",
+      "source": "agent",
+      "event": "reins_run_action",
+      "name": "set-db-query-mode",
+      "ok": true,
+      "ms": 2
+    },
+    {
+      "at": "2026-11-10T22:50:49.306Z",
+      "source": "agent",
+      "event": "reins_run_action",
+      "name": "reset-server-metrics",
+      "ok": true,
+      "ms": 2
+    },
+    {
+      "at": "2026-11-10T22:50:49.396Z",
+      "source": "bridge",
+      "event": "paired",
+      "name": "http://localhost:5173/",
+      "ok": true
+    },
+    {
+      "at": "2026-11-10T22:50:50.245Z",
+      "source": "agent",
+      "event": "reins_run_action",
+      "name": "login-as-tester",
+      "ok": true,
+      "ms": 85
+    }
+  ]
+}

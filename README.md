@@ -113,8 +113,8 @@ When you run `/reins:setup` on a Vite + React project like [`examples/vite-react
 
 ### Step 3: Run `/reins:drive` (or `npm run demo:agent`)
 
-Once paired, the agent drives the running app over MCP using the 9 `reins_*` tools:
-`reins_list_actions` → `reins_run_action` → `reins_state` → `reins_network` → `reins_errors` → `reins_perf` → `reins_dom` → `reins_panel_box` → `reins_snap`.
+Once paired, the agent drives the running app over MCP using the 11 `reins_*` tools:
+`reins_list_actions` → `reins_run_action` → `reins_state` → `reins_network` → `reins_errors` → `reins_perf` → `reins_dom` → `reins_server` → `reins_panel_box` → `reins_snap` → `reins_report`.
 
 ---
 
@@ -127,7 +127,8 @@ git clone https://github.com/mindmakr/reins-examples.git
 cd reins-examples
 npm install
 
-# Run the automated end-to-end agent showcase (Bridge + Vite + headless Chromium CDP + panel snaps)
+# Run the automated end-to-end agent showcase (bridge + Vite with its reins/node API + headless Chromium over CDP):
+# panel snaps, a before/after session report and the compare table
 npm run demo:agent
 
 # Run production build + bundle verification (`vite build && reins verify dist`)
@@ -137,7 +138,7 @@ npm run build
 npm test
 ```
 
-> **Note on installing `reins` in your own project:** This example vendors `vendor/reins-0.1.0.tgz` so CI and fresh clones run `npm install` offline with zero setup. In your own repository, install from npm (`npm i -D reins`) or directly from GitHub (`https://github.com/mindmakr/reins`).
+> **Note on installing `reins` in your own project:** This example vendors `vendor/reins-0.1.0.tgz` so CI and fresh clones run `npm install` offline with zero setup. If you replace that tarball with a newer build of the same version, run `npm run reins:refresh`; a plain `npm install` keeps the copy npm cached under the old hash. In your own repository, install from npm (`npm i -D reins`) or directly from GitHub (`https://github.com/mindmakr/reins`).
 
 ---
 
@@ -327,18 +328,62 @@ Following **Lucid Coding Principle #2** (*"Give agents instruments, not just scr
 
 See [**`HOW_IT_WAS_BUILT.md`**](./HOW_IT_WAS_BUILT.md) for the complete architecture and code walkthrough.
 
-#### 7. Zero-Leak Production Bundle Verification (`npm run build`)
+#### 7. Finding a Slow Backend Query (`reins/node` + `reins_server`)
 
-Running `npm run build` runs `vite build && reins verify dist`, swapping `reins` for `reins/stub` and scanning every emitted file in `dist/` for `__REINS_DEV_ONLY__`:
+The example's API ([`server/index.mjs`](./examples/vite-react/server/index.mjs)) runs inside the Vite dev server and is instrumented with `reins/node`. It starts in a deliberately slow mode: one query for the invoices, then one query per invoice for its line items (an N+1). Every browser `fetch('/api/...')` carries an `x-reins-trace` id, so `reins_perf` and `reins_report` can put the server's database spans inside the browser call that caused them:
+
+```text
+| At   | Kind   | What                                                                             | Duration            |
+| 1425 | api    | GET /api/invoices?role=finance-admin                                             | 597 ms              |
+| 1433 | server | ↳ GET /api/invoices · db.invoices.select 39 ms, db.line_items.select ×5 542 ms   | 581 ms (db 581 ms)  |
+```
+
+`reins_report` turns that into plain findings, with no thresholds for the agent to remember:
+
+```text
+- ⚠️ Slow API: `GET /api/invoices` took 597 ms (over 500 ms).
+- ⚠️ Server: `db.line_items.select` took 542 of 581 ms (93%) in `GET /api/invoices`,
+  called 5 times in one request: looks like an N+1 query, batch it.
+```
+
+The full report is committed as [`session-before-fix.md`](./examples/vite-react/screenshots/session-before-fix.md).
+
+#### 8. Proving the Fix (`reins_report` + `npx reins report --compare`)
+
+The demo then runs the server action `set-db-query-mode` with `{ mode: 'batched-fast' }` (through `reins_run_action` with `target: 'server'`), reloads the page, signs in again and takes a second report at the same point in the flow. `npx reins report --compare before.json after.json` prints the difference:
+
+```text
+| Metric             | Before | After | Change                   |
+| API max (ms)       | 597    | 31    | ▼ 566 ms (−95%) better   |
+| Server db avg (ms) | 307    | 26    | ▼ 281 ms (−92%) better   |
+| API calls          | 2      | 2     | = same                   |
+
+### Resolved
+- Slow API: `GET /api/invoices` took 597 ms (over 500 ms).
+- Server: `db.line_items.select` took 542 of 581 ms (93%) in `GET /api/invoices`, called 5 times in one request: looks like an N+1 query, batch it.
+
+### New
+- None.
+```
+
+See [`session-after-fix.md`](./examples/vite-react/screenshots/session-after-fix.md) and [`session-compare.md`](./examples/vite-react/screenshots/session-compare.md). Your numbers will differ by a few milliseconds on each run.
+
+#### 9. Tester Record Mode (`reins/record`)
+
+A tester does not need an agent or a bridge. Start the app with `npm run dev` and either open `http://localhost:5173/?reins=record` or click **Record Session** in the HUD. A small `● Recording · Export` pill appears. Click through the bug, then click **Export** to download `reins-session-<time>.md` and `.json`: the same report format as above, with the same redaction. Hand those files to an agent to diagnose. Production builds swap `reins/record` for an empty stub, and `reins verify dist` checks it.
+
+#### 10. Zero-Leak Production Bundle Verification (`npm run build`)
+
+Running `npm run build` runs `vite build && reins verify dist`, swapping `reins` for `reins/stub` and `reins/record` for `reins/record-stub`, and scanning every emitted file in `dist/` for `__REINS_DEV_ONLY__`:
 
 ```text
 > vite build && reins verify dist
 vite v6.4.6 building for production...
-✓ 34 modules transformed.
+✓ 35 modules transformed.
 dist/index.html                   0.48 kB │ gzip:  0.33 kB
-dist/assets/index-BpboXBCF.css    6.28 kB │ gzip:  1.84 kB
-dist/assets/index-BQrlBAAp.js   160.38 kB │ gzip: 51.89 kB
-✓ built in 457ms
+dist/assets/index-CsHMs6NZ.css    7.96 kB │ gzip:  2.07 kB
+dist/assets/index-D4I-yknF.js   165.27 kB │ gzip: 53.36 kB
+✓ built in 558ms
 reins-verify-bundle: clean (dist)
 ```
 
@@ -346,7 +391,7 @@ reins-verify-bundle: clean (dist)
 
 ## Companion: Coordinator (Lucid Coding)
 
-Pair [**reins**](https://github.com/mindmakr/reins) with [**Coordinator**](https://github.com/mindmakr/coordinator) ([site](https://mindmakr.github.io/coordinator/)) so isolated builders wire features with `useReinsAction` and `<ReinsPanel>`, and independent **blind visual & code critics** drive the app over MCP, switch locales (`en` ↔ `ar` RTL) and themes, check `reins_state`, `reins_network`, and `reins_errors`, and attach `reins_snap` PNGs as durable proof.
+Pair [**reins**](https://github.com/mindmakr/reins) with [**Coordinator**](https://github.com/mindmakr/coordinator) ([site](https://mindmakr.github.io/coordinator/)) so isolated builders wire features with `useReinsAction` and `<ReinsPanel>`, and independent **blind visual & code critics** drive the app over MCP, switch locales (`en` ↔ `ar` RTL) and themes, check `reins_state`, `reins_network`, and `reins_errors`, and attach `reins_snap` PNGs and `reins_report` before/after files as durable proof.
 
 ## Licence
 
