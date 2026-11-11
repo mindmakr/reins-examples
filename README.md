@@ -395,4 +395,6 @@ Pair [**reins**](https://github.com/mindmakr/reins) with [**Coordinator**](https
 
 ## Licence
 
-[MIT](./LICENSE) © Asif Raja, by [mindmakr](https://github.com/mindmakr)
+[MIT](./LICENSE) © Asif Raja, by [mindmakr](https://github.com/mindmakr). Copy any example into your own project.
+
+The names "reins" and "Lucid Coding" are covered by the [trademark policy](./TRADEMARKS.md).
