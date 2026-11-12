@@ -1,8 +1,8 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { reins } from 'reins';
-import { routerLocation } from 'reins/adapters';
-import { recordFromUrl } from 'reins/record';
+import { reins } from '@mindmakr/reins';
+import { routerLocation } from '@mindmakr/reins/adapters';
+import { recordFromUrl } from '@mindmakr/reins/record';
 import { App } from './App';
 import { store } from './store';
 import './styles.css';

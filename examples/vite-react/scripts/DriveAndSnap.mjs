@@ -4,7 +4,7 @@ import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
-import { callTool, fileAudit, Hub } from 'reins/bridge';
+import { callTool, fileAudit, Hub } from '@mindmakr/reins/bridge';
 import { createServer } from 'vite';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -13,7 +13,7 @@ const screenshotsDir = join(projectRoot, 'screenshots');
 mkdirSync(screenshotsDir, { recursive: true });
 
 const require = createRequire(import.meta.url);
-const reinsCli = resolve(dirname(require.resolve('reins')), 'cli.js');
+const reinsCli = resolve(dirname(require.resolve('@mindmakr/reins')), 'cli.js');
 
 const CDP_PORT = 19222;
 const CDP_URL = `http://127.0.0.1:${CDP_PORT}`;
@@ -42,7 +42,7 @@ async function main() {
     audit,
   });
 
-  console.log('2. Starting Vite dev server (with reins/node backend API)...');
+  console.log('2. Starting Vite dev server (with @mindmakr/reins/node backend API)...');
   const vite = await createServer({
     root: projectRoot,
     logLevel: 'silent',
@@ -90,10 +90,10 @@ async function main() {
       snaps: [],
     };
 
-    console.log('4. Calling MCP tool: reins_list_actions (frontend + paired reins/node backend)...');
+    console.log('4. Calling MCP tool: reins_list_actions (frontend + paired @mindmakr/reins/node backend)...');
     const listed = await callTool(ctx, 'reins_list_actions', {});
     if (!Array.isArray(listed?.servers) || listed.servers.length === 0) {
-      throw new Error('Expected paired reins/node server in reins_list_actions.servers');
+      throw new Error('Expected paired @mindmakr/reins/node server in reins_list_actions.servers');
     }
 
     // -------------------------------------------------------------------------

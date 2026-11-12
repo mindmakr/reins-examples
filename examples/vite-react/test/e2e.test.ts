@@ -2,11 +2,11 @@ import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { reins } from 'reins';
-import { createReinsNode, TRACE_HEADER } from 'reins/node';
-import { collectSession, startRecording, stopRecording } from 'reins/record';
-import { buildSession, compareSessions, findings, renderMarkdown } from 'reins/report';
-import { findMarker, listFiles } from 'reins/verify';
+import { reins } from '@mindmakr/reins';
+import { createReinsNode, TRACE_HEADER } from '@mindmakr/reins/node';
+import { collectSession, startRecording, stopRecording } from '@mindmakr/reins/record';
+import { buildSession, compareSessions, findings, renderMarkdown } from '@mindmakr/reins/report';
+import { findMarker, listFiles } from '@mindmakr/reins/verify';
 import { build } from 'vite';
 import { beforeEach, describe, expect, it } from 'vitest';
 // @ts-expect-error ESM server module
@@ -85,7 +85,7 @@ describe('Payday Invoice Studio (examples/vite-react)', () => {
     stopRecording();
   });
 
-  it('instruments /api/invoices with reins/node spans, flags N+1 slow queries, and diffs before/after sessions', async () => {
+  it('instruments /api/invoices with @mindmakr/reins/node spans, flags N+1 slow queries, and diffs before/after sessions', async () => {
     const rn = createReinsNode({ NODE_ENV: 'development' });
     // No bridge in this test: `standalone` records without one, so the test can read `rn.report()` itself.
     await rn.connect({ tokenFile: join(projectRoot, '.reins', 'no-token-for-unit-test'), reconnect: false, standalone: true });
@@ -172,7 +172,7 @@ describe('Payday Invoice Studio (examples/vite-react)', () => {
     }
   }, 15000);
 
-  it('strips all reins and reins/record dev code (__REINS_DEV_ONLY__) from the production Vite build', async () => {
+  it('strips all reins and @mindmakr/reins/record dev code (__REINS_DEV_ONLY__) from the production Vite build', async () => {
     const outDir = join(projectRoot, 'dist');
     await build({
       root: projectRoot,

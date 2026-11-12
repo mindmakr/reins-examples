@@ -1,12 +1,12 @@
 import { createServer } from 'node:http';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createReinsNode, nodeEnabled } from 'reins/node';
+import { createReinsNode, nodeEnabled } from '@mindmakr/reins/node';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /**
- * Payday Invoice Studio — Dev API Server instrumented with `reins/node`.
+ * Payday Invoice Studio — Dev API Server instrumented with `@mindmakr/reins/node`.
  *
  * Demonstrates:
  *  1. Inbound HTTP tracking + `Server-Timing` response headers (`app`, `db`, `el-p99`) for the frontend HUD.
@@ -174,6 +174,6 @@ if (isMain) {
   }
   const srv = createServer(api.handler);
   srv.listen(port, '127.0.0.1', () => {
-    console.log(`[payday-api] listening on http://127.0.0.1:${port} (reins/node instrumentation active)`);
+    console.log(`[payday-api] listening on http://127.0.0.1:${port} (@mindmakr/reins/node instrumentation active)`);
   });
 }
