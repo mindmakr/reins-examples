@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { copyFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
+import { createServer as createNetServer } from 'node:net';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
@@ -32,6 +33,17 @@ async function waitForPairing(hub, { previousBrowserId = 0, expectNode = true, t
   );
 }
 
+function freePort() {
+  return new Promise((ok, fail) => {
+    const probe = createNetServer();
+    probe.once('error', fail);
+    probe.listen(0, '127.0.0.1', () => {
+      const { port } = probe.address();
+      probe.close(() => ok(port));
+    });
+  });
+}
+
 async function main() {
   console.log('1. Starting reins bridge hub on 127.0.0.1:7357...');
   const audit = fileAudit(projectRoot);
@@ -43,10 +55,13 @@ async function main() {
   });
 
   console.log('2. Starting Vite dev server (with @mindmakr/reins/node backend API)...');
+  // A free port, not Vite's default 5173: a browser tab left open on an earlier `npm run dev` keeps asking
+  // that port for the pairing token, and would pair with this bridge as a second page in the middle of the run.
+  const port = await freePort();
   const vite = await createServer({
     root: projectRoot,
     logLevel: 'silent',
-    server: { host: '127.0.0.1', port: 0 },
+    server: { host: '127.0.0.1', port, strictPort: true },
   });
   await vite.listen();
   const address = vite.httpServer?.address();
