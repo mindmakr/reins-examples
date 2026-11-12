@@ -1,7 +1,7 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
-import { reins } from 'reins';
-import { ReinsPanel, useReinsAction } from 'reins/react';
-import { exportSession, isRecording, startRecording } from 'reins/record';
+import { reins } from '@mindmakr/reins';
+import { ReinsPanel, useReinsAction } from '@mindmakr/reins/react';
+import { exportSession, isRecording, startRecording } from '@mindmakr/reins/record';
 import { TRANSLATIONS, type Locale } from './i18n';
 import {
   getVisibleInvoices,

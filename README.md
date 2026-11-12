@@ -2,9 +2,9 @@
 
 Official, runnable examples for [**reins**](https://github.com/mindmakr/reins) ([live site & docs](https://mindmakr.github.io/reins/)) — the tiny (< 5 KB min+gzip) dev-only library and agent skill that gives AI coding agents hands and eyes inside your running web and Expo apps. Built for [**Lucid Coding**](https://mindmakr.github.io/coordinator/lucid-coding.html) alongside [**Coordinator**](https://github.com/mindmakr/coordinator) ([site](https://mindmakr.github.io/coordinator/)).
 
-Instead of clicking by pixels and guessing what happened, an agent paired with **reins** calls your app's own named actions, reads redacted state snapshots, inspects recent network calls and runtime errors, measures page lifecycle, component mount/render timings, and API latency (`reins_perf`), inspects live DOM subtrees, computed CSS, and layout clipping (`reins_dom`), and captures pixel-exact `<ReinsPanel>` screenshots across locales (LTR & RTL) and themes. In production builds, `reins` is swapped for an empty stub and `reins verify` guarantees zero dev code ever ships.
+Instead of clicking by pixels and guessing what happened, an agent paired with **reins** calls your app's own named actions, reads redacted state snapshots, inspects recent network calls and runtime errors, measures page lifecycle, component mount/render timings, and API latency (`reins_perf`), inspects live DOM subtrees, computed CSS, and layout clipping (`reins_dom`), and captures pixel-exact `<ReinsPanel>` screenshots across locales (LTR & RTL) and themes. In production builds, `@mindmakr/reins` is swapped for an empty stub and `reins verify` guarantees zero dev code ever ships.
 
-> **Deep Dive for Models & Developers:** Read [**`HOW_IT_WAS_BUILT.md`**](./HOW_IT_WAS_BUILT.md) for the **8 Lucid Coding Principles**, how `reins` stays under **5 KB min+gzip** (`5,106 B`) with zero runtime dependencies, and a step-by-step walkthrough of how coding agents use `reins_perf` and `reins_dom` to diagnose and optimize apps.
+> **Deep Dive for Models & Developers:** Read [**`HOW_IT_WAS_BUILT.md`**](./HOW_IT_WAS_BUILT.md) for the **8 Lucid Coding Principles**, how `reins` stays under **5 KB min+gzip** (`4,522 B`) with zero runtime dependencies, and a step-by-step walkthrough of how coding agents use `reins_perf` and `reins_dom` to diagnose and optimize apps.
 
 ---
 
@@ -55,11 +55,11 @@ In Claude Code:
 
 When you run `/reins:setup` on a Vite + React project like [`examples/vite-react`](./examples/vite-react), the agent follows the setup playbook automatically:
 
-1. **Wires the build plugin first (`vite.config.ts`)** so `/__reins/token` is served in dev and `reins` resolves to `reins/stub` in production builds:
+1. **Wires the build plugin first (`vite.config.ts`)** so `/__reins/token` is served in dev and `@mindmakr/reins` resolves to `@mindmakr/reins/stub` in production builds:
    ```ts
    import { defineConfig } from 'vite';
    import react from '@vitejs/plugin-react';
-   import reins from 'reins/vite';
+   import reins from '@mindmakr/reins/vite';
 
    export default defineConfig({
      plugins: [reins(), react()],
@@ -67,8 +67,8 @@ When you run `/reins:setup` on a Vite + React project like [`examples/vite-react
    ```
 2. **Connects in dev mode and registers state sources (`src/main.tsx`)**:
    ```ts
-   import { reins } from 'reins';
-   import { routerLocation } from 'reins/adapters';
+   import { reins } from '@mindmakr/reins';
+   import { routerLocation } from '@mindmakr/reins/adapters';
    import { store } from './store';
 
    if (import.meta.env.DEV) {
@@ -81,7 +81,7 @@ When you run `/reins:setup` on a Vite + React project like [`examples/vite-react
    ```
 3. **Registers named actions and wraps key regions in `<ReinsPanel id="...">` (`src/App.tsx`)**:
    ```tsx
-   import { ReinsPanel, useReinsAction } from 'reins/react';
+   import { ReinsPanel, useReinsAction } from '@mindmakr/reins/react';
 
    useReinsAction({
      name: 'set-locale',
@@ -127,7 +127,7 @@ git clone https://github.com/mindmakr/reins-examples.git
 cd reins-examples
 npm install
 
-# Run the automated end-to-end agent showcase (bridge + Vite with its reins/node API + headless Chromium over CDP):
+# Run the automated end-to-end agent showcase (bridge + Vite with its @mindmakr/reins/node API + headless Chromium over CDP):
 # panel snaps, a before/after session report and the compare table
 npm run demo:agent
 
@@ -138,7 +138,7 @@ npm run build
 npm test
 ```
 
-> **Note on installing `reins` in your own project:** This example vendors `vendor/reins-0.1.0.tgz` so CI and fresh clones run `npm install` offline with zero setup. If you replace that tarball with a newer build of the same version, run `npm run reins:refresh`; a plain `npm install` keeps the copy npm cached under the old hash. In your own repository, install from npm (`npm i -D reins`) or directly from GitHub (`https://github.com/mindmakr/reins`).
+> **Note on installing `@mindmakr/reins` in your own project:** This example installs the published package. In your own repository, do the same: `npm i -D @mindmakr/reins`.
 
 ---
 
@@ -328,9 +328,9 @@ Following **Lucid Coding Principle #2** (*"Give agents instruments, not just scr
 
 See [**`HOW_IT_WAS_BUILT.md`**](./HOW_IT_WAS_BUILT.md) for the complete architecture and code walkthrough.
 
-#### 7. Finding a Slow Backend Query (`reins/node` + `reins_server`)
+#### 7. Finding a Slow Backend Query (`@mindmakr/reins/node` + `reins_server`)
 
-The example's API ([`server/index.mjs`](./examples/vite-react/server/index.mjs)) runs inside the Vite dev server and is instrumented with `reins/node`. It starts in a deliberately slow mode: one query for the invoices, then one query per invoice for its line items (an N+1). Every browser `fetch('/api/...')` carries an `x-reins-trace` id, so `reins_perf` and `reins_report` can put the server's database spans inside the browser call that caused them:
+The example's API ([`server/index.mjs`](./examples/vite-react/server/index.mjs)) runs inside the Vite dev server and is instrumented with `@mindmakr/reins/node`. It starts in a deliberately slow mode: one query for the invoices, then one query per invoice for its line items (an N+1). Every browser `fetch('/api/...')` carries an `x-reins-trace` id, so `reins_perf` and `reins_report` can put the server's database spans inside the browser call that caused them:
 
 ```text
 | At   | Kind   | What                                                                             | Duration            |
@@ -368,13 +368,13 @@ The demo then runs the server action `set-db-query-mode` with `{ mode: 'batched-
 
 See [`session-after-fix.md`](./examples/vite-react/screenshots/session-after-fix.md) and [`session-compare.md`](./examples/vite-react/screenshots/session-compare.md). Your numbers will differ by a few milliseconds on each run.
 
-#### 9. Tester Record Mode (`reins/record`)
+#### 9. Tester Record Mode (`@mindmakr/reins/record`)
 
-A tester does not need an agent or a bridge. Start the app with `npm run dev` and either open `http://localhost:5173/?reins=record` or click **Record Session** in the HUD. A small `● Recording · Export` pill appears. Click through the bug, then click **Export** to download `reins-session-<time>.md` and `.json`: the same report format as above, with the same redaction. Hand those files to an agent to diagnose. Production builds swap `reins/record` for an empty stub, and `reins verify dist` checks it.
+A tester does not need an agent or a bridge. Start the app with `npm run dev` and either open `http://localhost:5173/?reins=record` or click **Record Session** in the HUD. A small `● Recording · Export` pill appears. Click through the bug, then click **Export** to download `reins-session-<time>.md` and `.json`: the same report format as above, with the same redaction. Hand those files to an agent to diagnose. Production builds swap `@mindmakr/reins/record` for an empty stub, and `reins verify dist` checks it.
 
 #### 10. Zero-Leak Production Bundle Verification (`npm run build`)
 
-Running `npm run build` runs `vite build && reins verify dist`, swapping `reins` for `reins/stub` and `reins/record` for `reins/record-stub`, and scanning every emitted file in `dist/` for `__REINS_DEV_ONLY__`:
+Running `npm run build` runs `vite build && reins verify dist`, swapping `@mindmakr/reins` for `@mindmakr/reins/stub` and `@mindmakr/reins/record` for `@mindmakr/reins/record-stub`, and scanning every emitted file in `dist/` for `__REINS_DEV_ONLY__`:
 
 ```text
 > vite build && reins verify dist

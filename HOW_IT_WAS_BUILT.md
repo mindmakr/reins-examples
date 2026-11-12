@@ -1,6 +1,6 @@
 # How It Was Built: Lucid Coding with `reins` and `Coordinator`
 
-This document is written for **both AI coding agents/models to learn from** and **developers/engineers to understand** how [`examples/vite-react`](./examples/vite-react) (*Payday Invoice Studio*) and [`reins`](https://github.com/mindmakr/reins) are architected, how `reins` stays under **5 KB min+gzip** (`5,106 B`) with zero runtime dependencies, and how agents use the **9 `reins_*` MCP instruments**—especially **`reins_perf`** and **`reins_dom`**—to build, diagnose, and verify software at a hard quality bar.
+This document is written for **both AI coding agents/models to learn from** and **developers/engineers to understand** how [`examples/vite-react`](./examples/vite-react) (*Payday Invoice Studio*) and [`reins`](https://github.com/mindmakr/reins) are architected, how `reins` stays under **5 KB min+gzip** (`4,522 B`) with zero runtime dependencies, and how agents use the **9 `reins_*` MCP instruments**—especially **`reins_perf`** and **`reins_dom`**—to build, diagnose, and verify software at a hard quality bar.
 
 ---
 
@@ -21,9 +21,9 @@ This document is written for **both AI coding agents/models to learn from** and 
 
 ---
 
-## 2. How `reins` Is Architected Under 5 KB (`5,106 B` min+gzip)
+## 2. How `reins` Is Architected Under 5 KB (`4,522 B` min+gzip)
 
-`packages/reins/test/size.test.ts` enforces a hard ceiling of **5,120 B (5 KB) min+gzip** on `packages/reins/src/index.ts`. Even with all 9 MCP capabilities (`perf` and `dom` included), `reins` core compiles to **10,305 B minified / 5,106 B min+gzip** with **zero runtime dependencies**.
+`packages/reins/test/size.test.ts` enforces a hard ceiling of **5,120 B (5 KB) min+gzip** on `packages/reins/src/index.ts`. Even with all 9 MCP capabilities (`perf` and `dom` included), `reins` core compiles to **4,522 B min+gzip** with **zero runtime dependencies**.
 
 Here is how the architecture achieves that:
 
@@ -50,9 +50,9 @@ Rather than running a continuous `MutationObserver` or layout thrashing loop, `r
   - `'vertical-clip'`: `el.scrollHeight > el.clientHeight + 1` while `overflowY` is `'hidden'` or `'clip'`.
   - `'zero-size'`: `(r.width === 0 || r.height === 0)` while `display !== 'none'` and `display !== 'contents'`.
 
-### 2.4 Zero-Leak Production Builds (`reins/vite` + `reins/stub` + `reins verify`)
+### 2.4 Zero-Leak Production Builds (`@mindmakr/reins/vite` + `@mindmakr/reins/stub` + `reins verify`)
 - Every dev bundle that includes `reins` contains the constant `DEV_MARKER = '__REINS_DEV_ONLY__'`.
-- During `vite build` (or Next.js / Metro production builds), the `reins()` plugin intercepts module resolution and swaps `reins` for `reins/stub`—a tiny no-op module where `action()`, `state()`, `markComponent()`, `perf()`, and `dom()` do nothing and `DEV_MARKER` is absent.
+- During `vite build` (or Next.js / Metro production builds), the `reins()` plugin intercepts module resolution and swaps `@mindmakr/reins` for `@mindmakr/reins/stub`—a tiny no-op module where `action()`, `state()`, `markComponent()`, `perf()`, and `dom()` do nothing and `DEV_MARKER` is absent.
 - Running `reins verify dist` scans every emitted file in `dist/` for `__REINS_DEV_ONLY__` and fails the build if even a single byte of dev instrumentation leaked.
 
 ---
@@ -209,13 +209,13 @@ Instead of squinting at screenshots to guess whether Arabic (`ar`) actually flip
 
 ## 4. Step-by-Step Code Walkthrough of `examples/vite-react`
 
-### Step 1: `vite.config.ts` — Wiring `reins/vite` and Dev API Middleware
-[`examples/vite-react/vite.config.ts`](./examples/vite-react/vite.config.ts) registers `reins()` first so `/__reins/token` is served in dev mode and `reins` is swapped for `reins/stub` in production builds:
+### Step 1: `vite.config.ts` — Wiring `@mindmakr/reins/vite` and Dev API Middleware
+[`examples/vite-react/vite.config.ts`](./examples/vite-react/vite.config.ts) registers `reins()` first so `/__reins/token` is served in dev mode and `@mindmakr/reins` is swapped for `@mindmakr/reins/stub` in production builds:
 
 ```ts
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import reins from 'reins/vite';
+import reins from '@mindmakr/reins/vite';
 
 export default defineConfig({
   plugins: [reins(), invoiceApiMiddleware(), react()],
@@ -226,8 +226,8 @@ export default defineConfig({
 [`examples/vite-react/src/main.tsx`](./examples/vite-react/src/main.tsx) registers the `app` store snapshot and `route` adapter in `import.meta.env.DEV`:
 
 ```tsx
-import { reins } from 'reins';
-import { routerLocation } from 'reins/adapters';
+import { reins } from '@mindmakr/reins';
+import { routerLocation } from '@mindmakr/reins/adapters';
 import { store } from './store';
 
 if (import.meta.env.DEV) {
