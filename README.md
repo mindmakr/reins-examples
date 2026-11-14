@@ -31,6 +31,7 @@ You'll see an agent sign in, pay an invoice, switch the app to Arabic and dark m
 | Example | Stack | Highlights | Status |
 | --- | --- | --- | --- |
 | [`examples/vite-react`](./examples/vite-react) | **Vite + React + TypeScript** | 6 named actions (`useReinsAction`), consequential action confirmation guard, automatic secret redaction in `reins_state` & `reins_network`, live performance & diagnostics HUD (`reins_perf` + `reins_dom`), 3 locales (`en` LTR, `ar` RTL, `fr` LTR), light/dark themes, 5 `<ReinsPanel>` targets, automated CDP agent showcase (`npm run demo:agent`), and `reins verify dist` bundle gate | **Ready & verified** |
+| [`examples/vite-react/flight-demo`](./examples/vite-react/flight-demo) | **Node server in Docker Compose** | `@mindmakr/reins/flight` on a production build: a `payout` process against a simulated bank, `reins.flight.json` promises, `reins flight watch` beside the server, a signed webhook to a local receiver, the report page, and `reins flight report --compare` from broken to fixed (`npm run demo` in that folder) | **Waits for reins 0.2.0** (runs on a local build of reins until then) |
 | `examples/nextjs-app-router` | **Next.js App Router** | `withReins(nextConfig)`, `/api/reins-token` route handler, client `<Reins />` bootstrap, server/client boundary verification (`reins verify .next/static`) | *Next up* |
 | `examples/expo-mobile` | **Expo / React Native** | `withReins(metroConfig)`, `connectExpo()`, `<ReinsPanel id>` with `testID`, `adb` & simulator panel snaps | *Planned* |
 
@@ -386,6 +387,23 @@ dist/assets/index-D4I-yknF.js   165.27 kB │ gzip: 53.36 kB
 ✓ built in 558ms
 reins-verify-bundle: clean (dist)
 ```
+
+---
+
+## Flight demo: report-only checks on a production server (waits for reins 0.2.0)
+
+[`examples/vite-react/flight-demo`](./examples/vite-react/flight-demo) gives Payday Invoice Studio a **payout** process and runs its server as a production build in Docker Compose, with [reins flight](https://github.com/mindmakr/reins#flight-report-only-checks-on-a-production-server) on, the flight watcher beside it and a local webhook receiver. Flight records each step of each payout, checks the steps against the promises in `reins.flight.json`, and reports. It never retries, settles or blocks anything.
+
+In **broken mode** one payout stays pending at the simulated bank and one is debited twice. Flight tells the webhook receiver, in plain words, and shows both on the report page, which also says development instruments are off. In **fixed mode**, on a fresh store, all four promises hold, and `reins flight report --compare` lists both findings as resolved and none as new. `reins verify` passes on the browser build the server serves.
+
+`@mindmakr/reins/flight` is new in reins 0.2.0, which is not on npm yet, so this demo runs on a tarball of the local reins build (`REINS_TARBALL`). The rest of this repository keeps using the published 0.1.x. One command runs it all and exits 1 when a step fails:
+
+```sh
+cd examples/vite-react/flight-demo
+REINS_TARBALL=/path/to/reins/packages/reins/mindmakr-reins-0.2.0.tgz npm run demo
+```
+
+See [its README](./examples/vite-react/flight-demo/README.md) for how to build the tarball and what each step shows.
 
 ---
 

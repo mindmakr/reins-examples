@@ -1,0 +1,79 @@
+# The Payday Invoice Studio flight demo: the server as a production build with flight on, the flight watcher
+# beside it, and a local webhook receiver. Run it through `npm run demo` (scripts/run-demo.mjs), which builds the
+# image from the local reins tarball, picks free ports and brings everything down at the end.
+#
+# The watcher and the receiver share the server's network namespace, so all three reach each other on
+# 127.0.0.1: flight's webhook sink sends over http only to localhost (https anywhere else). Ports are published on
+# the host's loopback only.
+name: reins-flight-demo
+
+x-flight-env: &flight-env
+  NODE_ENV: production
+  FLIGHT_DIR: /data/flight
+  FLIGHT_WEBHOOK_URL: http://127.0.0.1:8787/flight
+  # Demo only: never use this default outside the demo. Set FLIGHT_WEBHOOK_SECRET to your own secret.
+  FLIGHT_WEBHOOK_SECRET: ${FLIGHT_WEBHOOK_SECRET:-demo-only-webhook-secret-change-me}
+  FLIGHT_HEALTH_URL: http://127.0.0.1:4100/health
+  FLIGHT_CHECK_EVERY_MS: ${FLIGHT_CHECK_EVERY_MS:-2000}
+
+services:
+  server:
+    build:
+      context: ..
+      dockerfile: flight-demo/Dockerfile
+    image: reins-flight-demo:local
+    init: true
+    environment:
+      <<: *flight-env
+      FLIGHT_INSTANCE: server-1
+      PORT: "4100"
+      PAYOUT_MODE: ${PAYOUT_MODE:-broken}
+      BANK_SCRIPT: ${BANK_SCRIPT:-settle,settle,pending,duplicate,settle}
+      # Demo only: set DEMO_ADMIN_TOKEN to your own value outside the demo.
+      DEMO_ADMIN_TOKEN: ${DEMO_ADMIN_TOKEN:-demo-only-admin-token}
+    ports:
+      - "127.0.0.1:${DEMO_PORT:-4100}:4100"
+      - "127.0.0.1:${RECEIVER_PORT:-4187}:8787"
+    volumes:
+      - flight-data:/data
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4100/health').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+  watcher:
+    image: reins-flight-demo:local
+    pull_policy: never
+    init: true
+    network_mode: "service:server"
+    depends_on:
+      server:
+        condition: service_healthy
+    environment:
+      <<: *flight-env
+      FLIGHT_INSTANCE: watcher
+    command: ["node_modules/.bin/reins", "flight", "watch", "--config", "flight.config.mjs"]
+    volumes:
+      - flight-data:/data
+
+  receiver:
+    image: reins-flight-demo:local
+    pull_policy: never
+    init: true
+    network_mode: "service:server"
+    depends_on:
+      server:
+        condition: service_healthy
+    environment:
+      RECEIVER_PORT: "8787"
+      FLIGHT_WEBHOOK_SECRET: ${FLIGHT_WEBHOOK_SECRET:-demo-only-webhook-secret-change-me}
+    command: ["node", "receiver/receiver.mjs"]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8787/health').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+volumes:
+  flight-data:

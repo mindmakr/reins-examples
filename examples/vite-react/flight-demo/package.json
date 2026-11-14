@@ -1,0 +1,18 @@
+{
+  "name": "@reins-examples/flight-demo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Payday Invoice Studio payout demo for reins flight: report-only checks on a production server, run in Docker on the local build of reins",
+  "type": "module",
+  "scripts": {
+    "demo": "node scripts/run-demo.mjs",
+    "start": "node server/main.mjs",
+    "receiver": "node receiver/receiver.mjs"
+  },
+  "dependencies": {
+    "@mindmakr/reins": "file:vendor/mindmakr-reins.tgz"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,10 @@
+**/node_modules
+**/.reins
+dist
+screenshots
+scripts
+test
+.mcp.json
+flight-demo/out
+flight-demo/scripts
+flight-demo/README.md

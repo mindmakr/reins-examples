@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "service": "payday-invoice-studio",
+  "processes": [
+    {
+      "name": "payout",
+      "key": "the payout id",
+      "steps": ["requested", "bank.sent", "bank.pending", "bank.settled", "bank.failed", "ledger.debited"],
+      "ends": ["ledger.debited", "bank.failed"],
+      "promises": [
+        {
+          "id": "pending-settles",
+          "kind": "within",
+          "after": "bank.pending",
+          "expect": ["bank.settled", "bank.failed"],
+          "within": "15s",
+          "why": "Nothing else resolves a pending transfer; a stuck one is money owed to an employee. (The demo bank settles in seconds; a real one may take hours.)"
+        },
+        {
+          "id": "one-debit",
+          "kind": "once",
+          "step": "ledger.debited",
+          "why": "A second debit makes the payroll pool look smaller than it is."
+        },
+        {
+          "id": "debit-after-settle",
+          "kind": "order",
+          "first": "bank.settled",
+          "then": "ledger.debited",
+          "why": "The ledger is debited only for money the bank has moved."
+        },
+        {
+          "id": "payout-ends",
+          "kind": "ends",
+          "within": "10m",
+          "why": "Every payout is paid or failed within ten minutes in the demo."
+        }
+      ]
+    }
+  ]
+}
