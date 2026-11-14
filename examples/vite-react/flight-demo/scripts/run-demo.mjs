@@ -61,7 +61,7 @@ function freePort() {
   });
 }
 
-let env = { ...process.env };
+let env = { ...process.env, COMPOSE_PROJECT_NAME: PROJECT }; // compose.yaml tags the image by this name
 
 /** Runs docker compose for this project; throws with the tail of its output when it fails, unless `allowFail`. */
 function compose(args, { allowFail = false, input } = {}) {
@@ -202,9 +202,8 @@ async function runMode(mode, ports) {
   });
 
   if (mode === 'fixed') {
-    await step('fixed: no promise is broken and the receiver was told of no broken promise', async () => {
-      const broken = report.findings.filter((f) => f.kind === 'broken');
-      if (broken.length) throw new Error(`broken promises: ${broken.map((f) => f.key).join(', ')}`);
+    await step('fixed: no finding is open and the receiver was told of no broken promise', async () => {
+      if (report.findings.length) throw new Error(`open findings: ${report.findings.map((f) => `${f.key} (${f.kind})`).join(', ')}`);
       const r = await receiver();
       writeFileSync(join(outDir, 'fixed-received.json'), JSON.stringify(r, null, 2));
       const told = r.received.filter((m) => m.body?.type === 'opened' && m.body?.finding?.kind === 'broken');
@@ -289,8 +288,15 @@ async function main() {
     const resolvedKeys = (data.resolved || []).map((f) => f.key);
     const missing = Object.values(KEYS).filter((k) => !resolvedKeys.includes(k));
     if (missing.length) throw new Error(`not resolved: ${missing.join(', ')}`);
-    if ((data.newFindings || []).length) throw new Error(`new findings: ${data.newFindings.map((f) => f.key).join(', ')}`);
-    return `resolved ${resolvedKeys.length}, new 0, still open ${(data.still || []).length}`;
+    // reins flight report --compare --json prints { resolved, new, still }.
+    for (const field of ['resolved', 'new', 'still']) {
+      if (!Array.isArray(data[field])) throw new Error(`the compare output has no "${field}" list (keys: ${Object.keys(data).join(', ')})`);
+    }
+    const newKeys = data.new.map((f) => f.key);
+    const stillKeys = data.still.map((f) => f.key);
+    if (newKeys.length) throw new Error(`new findings: ${newKeys.join(', ')}`);
+    if (stillKeys.length) throw new Error(`findings still open: ${stillKeys.join(', ')}`);
+    return `resolved ${resolvedKeys.length}, new ${newKeys.length}, still open ${stillKeys.length}`;
   });
 }
 

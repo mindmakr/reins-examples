@@ -10,6 +10,9 @@ WORKDIR /web
 COPY flight-demo/vendor/mindmakr-reins.tgz /vendor/mindmakr-reins.tgz
 COPY package.json tsconfig.json vite.config.ts index.html ./
 # Only what the browser build needs: the example's own tests and agent demo tools are left out.
+# No lockfile on purpose: the demo has none, and one could not hold the local tarball (npm records its sha512, which
+# changes with every `npm pack`, so `npm ci` would fail on the next build). `npm install` reads the versions from
+# package.json. With the published 0.2.0 on npm, commit a lockfile and use `npm ci` here and in the app stage.
 RUN npm pkg set "devDependencies.@mindmakr/reins=file:/vendor/mindmakr-reins.tgz" \
  && npm pkg delete devDependencies.playwright devDependencies.vitest \
  && npm install --no-audit --no-fund --no-package-lock

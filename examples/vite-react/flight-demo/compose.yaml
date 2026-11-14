@@ -5,6 +5,9 @@
 # The watcher and the receiver share the server's network namespace, so all three reach each other on
 # 127.0.0.1: flight's webhook sink sends over http only to localhost (https anywhere else). Ports are published on
 # the host's loopback only.
+#
+# The image is tagged by the Compose project name (COMPOSE_PROJECT_NAME, which `-p` sets), so two projects built from
+# this file never overwrite or run each other's image.
 name: reins-flight-demo
 
 x-flight-env: &flight-env
@@ -21,7 +24,7 @@ services:
     build:
       context: ..
       dockerfile: flight-demo/Dockerfile
-    image: reins-flight-demo:local
+    image: ${COMPOSE_PROJECT_NAME:-reins-flight-demo}-demo:local
     init: true
     environment:
       <<: *flight-env
@@ -43,7 +46,7 @@ services:
       retries: 15
 
   watcher:
-    image: reins-flight-demo:local
+    image: ${COMPOSE_PROJECT_NAME:-reins-flight-demo}-demo:local
     pull_policy: never
     init: true
     network_mode: "service:server"
@@ -58,7 +61,7 @@ services:
       - flight-data:/data
 
   receiver:
-    image: reins-flight-demo:local
+    image: ${COMPOSE_PROJECT_NAME:-reins-flight-demo}-demo:local
     pull_policy: never
     init: true
     network_mode: "service:server"

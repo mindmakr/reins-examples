@@ -18,6 +18,7 @@ const TOLERANCE_S = 5 * 60;
 const MAX_BODY = 64 * 1024;
 
 const seen = new Set();
+const MAX_RECEIVED = 200; // keep the last 200 messages so a long run cannot grow the list without limit
 const received = [];
 let rejected = 0;
 
@@ -79,6 +80,7 @@ const server = createServer((req, res) => {
       return res.end();
     }
     received.push({ receivedAt: new Date().toISOString(), id: req.headers['webhook-id'], verified: true, body });
+    if (received.length > MAX_RECEIVED) received.splice(0, received.length - MAX_RECEIVED);
     console.log(`[receiver] ${body.type}: ${body.text}`);
     res.writeHead(204);
     res.end();
