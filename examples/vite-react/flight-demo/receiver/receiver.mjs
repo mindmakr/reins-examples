@@ -17,6 +17,7 @@ const KEY = SECRET.startsWith('whsec_') ? Buffer.from(SECRET.slice(6), 'base64')
 const TOLERANCE_S = 5 * 60;
 const MAX_BODY = 64 * 1024;
 
+const MAX_SEEN = 1000; // remember the last 1000 webhook-ids, oldest dropped first, so the replay set stays bounded
 const seen = new Set();
 const MAX_RECEIVED = 200; // keep the last 200 messages so a long run cannot grow the list without limit
 const received = [];
@@ -38,7 +39,7 @@ function verify(headers, raw) {
   if (!ok) return 'bad signature';
   if (seen.has(id)) return 'already seen';
   seen.add(id);
-  if (seen.size > 10_000) seen.delete(seen.values().next().value);
+  while (seen.size > MAX_SEEN) seen.delete(seen.values().next().value);
   return null;
 }
 

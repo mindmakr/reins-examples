@@ -29,8 +29,8 @@ A complete **Vite + React + TypeScript** example wired with [**reins**](https://
 7. **Tester record mode (`@mindmakr/reins/record`)**
    - Open `/?reins=record` or click **Record Session** in the HUD, click through the app, then **Export** a Markdown and JSON session. No bridge or agent needed.
 
-8. **Report-only checks on a production server (`@mindmakr/reins/flight`, waits for reins 0.2.0)**
-   - [`flight-demo/`](./flight-demo) adds a `payout` process against a simulated bank and runs the server as a production build in Docker Compose with flight on, `reins flight watch` beside it and a signed webhook receiver. Broken mode leaves one payout pending and debits one twice; flight reports both; fixed mode resolves both (`reins flight report --compare`). It has its own `package.json` and runs on a local build of reins until 0.2.0 is published: see [`flight-demo/README.md`](./flight-demo/README.md).
+8. **Report-only checks on a production server (`@mindmakr/reins/flight`, reins 0.2.0)**
+   - [`flight-demo/`](./flight-demo) adds a `payout` process against a simulated bank and runs the server as a production build in Docker Compose with flight on, `reins flight watch` beside it and a signed webhook receiver. Broken mode leaves one payout pending and debits one twice; flight reports both; fixed mode resolves both (`reins flight report --compare`). It has its own `package.json` and lockfile with `@mindmakr/reins` 0.2.0 from npm, and runs with one command, `npm run demo` in that folder (Docker and Node 20 or newer): see [`flight-demo/README.md`](./flight-demo/README.md).
 
 ## Commands
 

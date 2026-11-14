@@ -1,27 +1,29 @@
 // One command for the whole flight demo: `npm run demo` (or `node scripts/run-demo.mjs`) in this folder.
 //
-//  1. Copies the local build of reins (REINS_TARBALL) to vendor/ and builds the Docker image from it; the image
+//  1. Builds the Docker image with @mindmakr/reins 0.2.0 from npm (`npm ci` from package-lock.json); the image
 //     build also makes the browser build and fails if `reins verify` finds development reins in it.
+//     `npm run demo -- --no-cache` builds it without the Docker build cache.
 //  2. Checks reins.flight.json with `reins flight check`.
 //  3. Broken mode: starts the server (production build, flight on), the watcher and the webhook receiver, pays
 //     five payouts, and waits until flight reports the pending payout and the double debit to the receiver.
 //     Saves the report page (HTML), its data (JSON) and Markdown, and runs `reins verify` on the served build.
 //  4. Fixed mode, on a fresh store: the same five payouts; no promise is broken.
 //  5. `reins flight report --compare` the two reports: both findings resolved, none new.
-//  6. Brings everything down, also when a step fails, and exits 1 when any step failed.
+//  6. Brings everything down (containers, the flight volume and this project's image), also when a step fails,
+//     and exits 1 when any step failed.
 //
 // Everything it saves goes to out/ (git-ignored): the reports hold payout ids, which are server-side data.
 
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, existsSync, mkdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const demoDir = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const repoRoot = resolve(demoDir, '..', '..', '..');
 const outDir = join(demoDir, 'out');
-const PROJECT = process.env.DEMO_PROJECT || 'reins-flight-demo';
+const PROJECT = process.env.DEMO_PROJECT || process.env.COMPOSE_PROJECT_NAME || 'reins-flight-demo';
+const NO_CACHE = process.argv.includes('--no-cache');
 // Demo only, as in compose.yaml.
 const ADMIN_TOKEN = process.env.DEMO_ADMIN_TOKEN || 'demo-only-admin-token';
 const KEYS = { pending: 'promise:payout:pending-settles', debit: 'promise:payout:one-debit' };
@@ -233,22 +235,6 @@ async function main() {
   rmSync(outDir, { recursive: true, force: true });
   mkdirSync(outDir, { recursive: true });
 
-  await step('use the local build of reins (REINS_TARBALL)', async () => {
-    const tarball = resolve(process.env.REINS_TARBALL || join(repoRoot, '..', 'reins', 'packages', 'reins', 'mindmakr-reins-0.2.0.tgz'));
-    if (!existsSync(tarball) || !statSync(tarball).isFile()) {
-      throw new Error(
-        `no reins tarball at ${tarball}.\n` +
-          '     Build one from a checkout of mindmakr/reins with flight (0.2.0 or later):\n' +
-          '       npm ci && npm run build            (at the reins repo root)\n' +
-          '       cd packages/reins && npm pack      (makes mindmakr-reins-0.2.0.tgz)\n' +
-          '     then set REINS_TARBALL to its path, or keep the reins checkout next to this repo.',
-      );
-    }
-    mkdirSync(join(demoDir, 'vendor'), { recursive: true });
-    copyFileSync(tarball, join(demoDir, 'vendor', 'mindmakr-reins.tgz'));
-    return tarball;
-  });
-
   await step('Docker is available', async () => {
     const r = spawnSync('docker', ['compose', 'version'], { encoding: 'utf8' });
     if (r.error || r.status !== 0) throw new Error('docker compose is not available. Install and start Docker.');
@@ -260,7 +246,7 @@ async function main() {
 
   await step('build the image: browser build with reins verify, production server with flight', async () => {
     compose(['down', '-v', '--remove-orphans'], { allowFail: true });
-    const r = compose(['build', '--progress', 'plain', 'server'], { allowFail: true });
+    const r = compose(['build', '--progress', 'plain', ...(NO_CACHE ? ['--no-cache'] : []), 'server'], { allowFail: true });
     writeFileSync(join(outDir, 'build.log'), `${r.stdout || ''}${r.stderr || ''}`);
     if (r.status !== 0) throw new Error(`docker compose build exited ${r.status}; see out/build.log`);
     const verified = `${r.stdout}${r.stderr}`.split('\n').find((l) => /reins-verify-bundle: clean/.test(l));
@@ -307,8 +293,10 @@ try {
   code = 1;
 } finally {
   try {
-    compose(['down', '-v', '--remove-orphans'], { allowFail: true });
-    log('\nok       Docker Compose project brought down (containers and the flight volume removed)');
+    // --rmi all removes the images the services name: here only this project's own image (compose.yaml).
+    const r = compose(['down', '-v', '--remove-orphans', '--rmi', 'all'], { allowFail: true });
+    if (r.status !== 0) throw new Error(`docker compose down exited ${r.status}: ${`${r.stdout}${r.stderr}`.trim().split('\n').slice(-3).join(' ')}`);
+    log(`\nok       Docker Compose project brought down (containers, the flight volume and the image ${PROJECT}:local removed)`);
   } catch (err) {
     log(`\nFAIL     could not bring the Docker Compose project down: ${err?.message || err}`);
     code = 1;

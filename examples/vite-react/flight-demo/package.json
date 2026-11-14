@@ -2,7 +2,7 @@
   "name": "@reins-examples/flight-demo",
   "version": "0.1.0",
   "private": true,
-  "description": "Payday Invoice Studio payout demo for reins flight: report-only checks on a production server, run in Docker on the local build of reins",
+  "description": "Payday Invoice Studio payout demo for reins flight: report-only checks on a production server, run in Docker on @mindmakr/reins 0.2.0 from npm",
   "type": "module",
   "scripts": {
     "demo": "node scripts/run-demo.mjs",
@@ -10,7 +10,13 @@
     "receiver": "node receiver/receiver.mjs"
   },
   "dependencies": {
-    "@mindmakr/reins": "file:vendor/mindmakr-reins.tgz"
+    "@mindmakr/reins": "^0.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "vite": "^6.4.6"
   },
   "engines": {
     "node": ">=20"

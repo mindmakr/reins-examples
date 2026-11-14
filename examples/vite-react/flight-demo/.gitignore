@@ -1,5 +1,4 @@
-# The local reins tarball the demo copies in, and what the demo saves (reports hold payout ids).
-vendor/
+# What the demo saves (reports hold payout ids).
 out/
 node_modules/
 .reins/
