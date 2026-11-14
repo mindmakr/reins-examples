@@ -1,0 +1,4 @@
+# What the demo saves (reports hold payout ids).
+out/
+node_modules/
+.reins/
